@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 26-08-2022 14.04.46
+# Date .........: 26-08-2022 14.51.58
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -109,6 +109,8 @@ class rClone_Class():
         if not self.exclude_files:
             self.exclude_files=[]
         self.exclude_files.extend(excl)
+        self.exclude_files = list(dict.fromkeys(self.exclude_files))
+
         temp_fname=f'{self.temp_dir}/exclude_files.txt'
         writeTextFile(data=self.exclude_files, file_out=temp_fname, replace=True, logger=self.logger)
         return temp_fname
