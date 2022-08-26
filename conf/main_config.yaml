@@ -1,0 +1,74 @@
+main:
+    runtime_dir: ${env:ln_RUNTIME_DIR}/lnSync
+    dry-run: ${env:lnSync_DRY_RUN}
+    tmp_dir: /tmp/lnSync
+
+
+rclone:
+    # https://rclone.org/local/#skip-links
+    bin: ${env:HOME}/.ln/bin/rclone/rclone
+    config_file: ${env:HOME}/.ln/bin/rclone/rclone.conf
+    exclude_files: ${get:common_exclude_files.patterns}
+    tmp_dir: /tmp/rclone
+    options:
+        -   "sync"
+        -   "-v"
+        -   "--ignore-case"
+        -   "--modify-window 2s"
+        -   --skip-links
+        -   --one-file-system
+
+rsync:
+    bin: /usr/bin/rsync
+    rclone_config_file: ${get:rclone.config_file}      # mi serve anche per rsync per vedere i nodi di destinazione
+    exclude_files: ${get:common_exclude_files.patterns}
+    tmp_dir: /tmp/rsync
+    options:
+        - "-e 'ssh -i /home/loreto/.ssh/Ln_ed25519'"
+        - "--recursive"
+        - "--links"
+        - "--perms"
+        - "--group"
+        - "--owner"
+        - "--devices"
+        - "--specials"
+        - "--ignore-missing-args"
+        - "--update"
+        - "--protect-args"
+        - "--human-readable"
+        - "--times"
+        - "--verbose"
+        - "--progress"
+        - "--partial"
+        - "--log-file=/tmp/rsync/ln_rsync.log"
+
+common_exclude_files:
+    patterns:
+        - "**/.cache/**"
+        - "**/.git/**"
+        - "**/__pycache__/**"
+        - "**/cache.*"
+        - "**/cache/**"
+        - "**/cache2/**"
+        - "**/lnLib/**"
+        - "**/log/**"
+        - "**/RECYCLER/**"
+        - "**/System Volume Information/**"
+        - "**/Telegram/**"
+        - "**/tmp/**"
+        - "*.bak"
+        - "*.cache"
+        - "*.log"
+        - "*.log.1?"
+        - "*.log.?"
+        - "*.pid"
+        - "desktop.ini"
+        - "*/RECYCLED/**"
+        - "*_tmp"
+        - "**/$$Recycle.Bin/**"
+        - "sync.ffs_db"
+        - "thumbs.db"
+        - "**/WPy*/**"
+
+profiles:
+    include_files: [ "conf/lnprofile.yaml", "conf/lnDisk.yaml" , "conf/myData.yaml" ]  # include_file as key will be removed

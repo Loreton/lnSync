@@ -1,0 +1,66 @@
+
+ln_base_profile:
+    base_local_root_dir: ${env:HOME}/.ln
+    folders:
+        -   config
+        -   envars
+        -   init
+        -   LnDoc
+        -   pyDevel
+        -   pyProduction
+        -   pyUtils
+        -   shDevel
+        -   shProduction
+        -   shUtils
+        -   systemd
+
+    exclude_files:
+        -   'runtime/**'
+        -   '**/runtime/**'
+
+    options: []
+
+
+
+ln_to_22_23_31_41:
+    base_remote_root_dir: /home/pi/.ln
+    _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    remote_nodes:
+        -   lnpi22
+        -   lnpi23
+        -   lnpi31
+        -   lnpi41
+
+
+ln_to_22:
+    base_remote_root_dir: /home/pi/.ln
+    _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    remote_nodes:
+        -   lnpi22
+
+ln_to_23:
+    base_remote_root_dir: /home/pi/.ln
+    _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    remote_nodes:
+        -   lnpi23
+
+ln_to_31:
+    base_remote_root_dir: /home/pi/.ln
+    _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    remote_nodes:
+        -   lnpi31
+
+ln_to_41:
+    _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    base_remote_root_dir: /home/pi/.ln
+    remote_nodes:
+        -   lnpi41
+
+
+ln_to_lndisk:
+    _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    base_remote_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk/.ln
+    remote_nodes:
+        -   local
+
+

@@ -1,0 +1,91 @@
+
+#:========================================
+#   M y D a t a
+#:========================================
+main:
+    MyData: ["BdI", "LnProducts", "Movies", "Photos", "MP3"]
+
+MyData_to_C:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/MyData
+    base_remote_root_dir: /mnt/c/Filu/MyData
+    folders: ${get:main.MyData}
+    remote_nodes: filesystem
+
+
+
+MyData_to_lnpi31:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/MyData
+    base_remote_root_dir: /mnt/Toshiba_1TB_LnDisk/Filu
+    folders: ${get:main.MyData}
+    remote_nodes: lnpi31
+
+
+MyData_to_lnpi41:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/MyData
+    base_remote_root_dir: /mnt/LNT1B_A/Filu/MyData
+    folders: ${get:main.MyData}
+    remote_nodes: lnpi41_rem
+
+
+Photos_1954_1995_gmail:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/MyData/Photos
+    base_remote_root_dir: /LeslaPhoto_1954_1995
+    remote_nodes: rinoseraf001
+    folders:
+        -   1954
+        -   1964
+        -   1965
+        -   1969
+        -   1972
+        -   1973
+        -   1974
+        -   1975
+        -   1983
+        -   1986
+        -   1987
+        -   1988
+        -   1989
+        -   1990
+        -   1992
+        -   1994
+        -   1995
+
+
+Photos_2000_2009_gmail:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/MyData/Photos
+    base_remote_root_dir: /LeslaPhoto_2000_2009
+    remote_nodes: rinoseraf002
+    folders:
+        -   2000
+        -   2001
+        -   2002
+        -   2003
+        -   2004
+        -   2005
+        -   2006
+        -   2007
+        -   2008
+        -   2009
+        -   Casetta_Lavori
+
+
+
+
+Photos_2010_2019_gmail:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/MyData/Photos
+    base_remote_root_dir: /LeslaPhoto_2010_2019
+    remote_nodes: rinoseraf003
+    remote_type: gmail
+    folders:
+        -   2010
+        -   2011
+        -   2012
+        -   2013
+        -   2014
+        -   2015
+        -   2016
+        -   2017
+        -   2018
+        -   2019
+
+

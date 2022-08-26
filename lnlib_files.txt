@@ -1,0 +1,11 @@
+ColoredLogger.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Logger/ColoredLogger.py
+lrwxrwxrwx 1 loreto loreto   86 Aug 18 09:14 convertionsUtils.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Utils/convertionsUtils.py
+lrwxrwxrwx 1 loreto loreto   79 Aug 19 12:40 fileUtils.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Utils/fileUtils.py
+-rwxrwxrwx 1 loreto loreto  941 Aug 17 07:55 __init__.py
+lrwxrwxrwx 1 loreto loreto   85 Aug 20 17:59 keyboard_prompt.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Utils/keyboard_prompt.py
+lrwxrwxrwx 1 loreto loreto   88 Aug 17 08:36 read_ini_file.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Dictionary/read_ini_file.py
+-rwxrwxr-x 1 loreto loreto 3929 Aug 21 09:23 read_yaml_file.py
+lrwxrwxrwx 1 loreto loreto   86 Aug 20 17:43 subprocessPopen.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/System/subprocessPopen.py
+lrwxrwxrwx 1 loreto loreto   84 Aug 20 15:34 subprocessRun.py -> /media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/System/subprocessRun.py
+Ubuntu-Silvia ~/.ln/pyDevel/lnSync $: ll
+

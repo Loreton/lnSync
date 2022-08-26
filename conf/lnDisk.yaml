@@ -1,0 +1,51 @@
+#
+# updated by ...: Loreto Notarantonio
+# Date .........: 25-08-2022 12.30.46
+#
+
+#########################################################
+# -             P R O F I L E S
+#########################################################
+
+
+local_vars:
+    LnDisk_partial: Loreto Lesla Technical-DOC LnStart Antonietta Rinaldo
+    LnDisk_Full: ${get:local_vars.LnDisk_partial} Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
+
+
+Antonietta_gMail:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk
+    base_remote_root_dir:
+    folders: Antonietta
+    remote_nodes: agentile0702
+    # remote_type: gmail
+
+
+
+LnDisk_to_gmail:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk
+    base_remote_root_dir:
+    folders: ${get:local_vars.LnDisk_partial}
+    remote_nodes: nloreto notaloreto loretonota etonota
+    # remote_type: gmail
+
+
+
+LnDisk_to_lnpi31:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk
+    base_remote_root_dir: /mnt/Toshiba_1TB_LnDisk/Filu/LnDisk
+    folders: ${get:local_vars.LnDisk_partial} Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
+    remote_nodes: lnpi31
+    # remote_type: sftp
+
+
+
+appo:
+    base_local_root_dir: /media/loreto/bckup1-500GB
+    base_remote_root_dir: /media/loreto/bkup2-500GB
+    folders: Filu
+    remote_nodes: local
+
+
+
+
