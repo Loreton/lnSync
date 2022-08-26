@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 26-08-2022 14.54.10
+# Date .........: 26-08-2022 17.43.00
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -14,6 +14,7 @@ from subprocessRun import run_sh
 # from read_ini_file import readIniFile
 from fileUtils import writeTextFile
 from LnDict import LoretoDict
+from ColoredLogger import getColors; C=getColors()
 
 
 from LoadYamlFile_Class import LoadYamlFile
@@ -123,14 +124,18 @@ class lnSync_Class():
             self.logger.notify("going to update node: %s", node_name)
             for folder in profile['folders']:
                 self.logger.notify("    - %s", folder)
+
+            check_remote_dir=True # check just first remote folder
             for folder in profile['folders']:
                 data={
-                    "node_name": node_name,
-                    "folder": folder,
-                    "profile": profile,
-                    "delete_excluded": delete_excluded,
-                    "dry_run": dry_run,
-                    "prompt": prompt,
+                    "node_name":        node_name,
+                    # "node":             self.rclone.rclone_conf.get(node_name, {}),
+                    "folder":           folder,
+                    "profile":          profile,
+                    "delete_excluded":  delete_excluded,
+                    "dry_run":          dry_run,
+                    "prompt":           prompt,
+                    "check_remote_dir": check_remote_dir,
                 }
                 if fRCLONE:
                     # self.rclone.processFolder(node_name=node_name, folder=folder, profile=profile, delete_excluded=delete_excluded, dry_run=dry_run)
@@ -139,6 +144,7 @@ class lnSync_Class():
                     # self.rsync.processFolder(node_name=node_name, folder=folder, profile=profile, delete_excluded=delete_excluded, dry_run=dry_run)
                     self.rsync.processFolder(**data)
 
+                check_remote_dir=False
 
         # ---- execute rclone
 

@@ -7,7 +7,7 @@ main:
 rclone:
     # https://rclone.org/local/#skip-links
     bin: ${env:HOME}/.ln/bin/rclone/rclone
-    config_file: ${env:HOME}/.ln/bin/rclone/rclone.conf
+    config_file: ${env:HOME}/.ln/bin/rclone/rclone.conf # /home/loreto/.ln/bin/rclone/rclone.conf
     exclude_files: ${get:common_exclude_files.patterns}
     tmp_dir: /tmp/rclone
     options:
