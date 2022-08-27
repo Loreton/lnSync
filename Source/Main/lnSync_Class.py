@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 26-08-2022 17.43.00
+# Date .........: 27-08-2022 12.19.16
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -122,6 +122,7 @@ class lnSync_Class():
 
         for node_name in profile['remote_nodes']:
             self.logger.notify("going to update node: %s", node_name)
+            self.logger.notify("...the following folders:")
             for folder in profile['folders']:
                 self.logger.notify("    - %s", folder)
 

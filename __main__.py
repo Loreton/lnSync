@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 26-08-2022 14.05.19
+# Date .........: 27-08-2022 12.17.09
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -57,7 +57,7 @@ def ParseInput():
         # logging and debug options
     parser.add_argument('--display-args', help='Display input paramenters', action='store_true')
     parser.add_argument('--logger-console-level', required=False,
-            choices=['critical', 'info', 'function', 'warning', 'error', 'debug', 'trace'], default='error',
+            choices=['critical', 'info', 'function', 'warning', 'error', 'debug', 'trace'], default='info',
             help='console logger level - default: error')
 
     parser.add_argument('--delete-excluded', help='detele excluded files', action='store_true')

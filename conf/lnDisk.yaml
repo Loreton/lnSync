@@ -1,6 +1,6 @@
 #
 # updated by ...: Loreto Notarantonio
-# Date .........: 26-08-2022 14.40.07
+# Date .........: 27-08-2022 12.40.23
 #
 
 #########################################################
@@ -36,11 +36,10 @@ LnDisk_to_lnpi31:
     remote_nodes: lnpi31
 
 
-
-appo:
-    base_local_root_dir: /media/loreto/bckup1-500GB
-    base_remote_root_dir: /media/loreto/bkup2-500GB
-    folders: Filu
+LnDisk_to_bkup2-500GB:
+    base_local_root_dir: /media/loreto/LnDataDisk/Filu
+    base_remote_root_dir: /media/loreto/bkup2-500GB/Filu
+    folders: DiskBackup MyData LnDisk
     remote_nodes: local
 
 

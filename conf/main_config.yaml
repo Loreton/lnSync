@@ -40,7 +40,7 @@ rsync:
         - "--verbose"
         - "--progress"
         - "--partial"
-        - "--log-file=/tmp/rsync/ln_rsync.log"
+        # - "--log-file=/tmp/rsync/ln_rsync.log"
 
 common_exclude_files:
     patterns:

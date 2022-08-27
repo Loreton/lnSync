@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 26-08-2022 17.58.36
+# Date .........: 27-08-2022 15.12.40
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -21,17 +21,6 @@ from ColoredLogger import getColors; C=getColors()
 #
 ########################################################
 class rSync_Class():
-    ''' rclone_conf sample node
-    [lnpi22]
-        host = 192.168.1.22
-        user = pi
-        port = 22
-        type = sftp
-        key_file = ~/.ssh/tunnel_ed25519
-        md5sum_command = md5sum
-        sha1sum_command = sha1sum
-    '''
-
     def __init__(self, *, config: dict, logger):
         self.logger=logger
 
@@ -53,6 +42,16 @@ class rSync_Class():
         self.rsync_options.extend(options)
         return ' '.join(self.rsync_options)
 
+    def checkLocalDir(self, path, exit_on_not_found=False):
+        if os.path.exists(path):
+            return path
+
+        elif exit_on_not_found:
+            self.logger.critical("Local directory: %s doesn't esists", path)
+            sys.exit(1)
+
+        else:
+            return None
 
 
     def resolveRemoteDir(self, node_name: str, path: str, check_it: bool=False, exit_on_not_found=False):
@@ -74,6 +73,9 @@ class rSync_Class():
             remote_path=f"{ssh_user}@{ssh_host}:{path}"
             check_cmd=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host} ls -l {path}"
 
+        elif node_type in ['gmail', 'drive']: #---- rclone --config=./rclone.conf -L lsd nloreto:_@NLORETO
+            remote_path=None
+
         else:
             self.logger.error('node: %s: [%s] is not supported by rSync!', node_name, node_type )
             remote_path=None
@@ -87,16 +89,6 @@ class rSync_Class():
         return remote_path
 
 
-    def checkLocalDir(self, path, exit_on_not_found=False):
-        if os.path.exists(path):
-            return path
-
-        elif exit_on_not_found:
-            self.logger.critical("Local directory: %s doesn't esists", path)
-            sys.exit(1)
-
-        else:
-            return None
 
 
     def setExcludeFiles(self, excl: list=[]):
@@ -171,6 +163,7 @@ class rSync_Class():
                             {dry_run} \
                             --exclude-from {exclude_filename} \
                             --delete-excluded={delete_excluded} \
+                            --log-file={self.temp_dir}/{folder}.log \
                             {options} \
                             {local_path} \
                             {dest}"""
@@ -180,6 +173,7 @@ class rSync_Class():
                             {C.redH}{dry_run}{C.colorReset} \
                             --exclude-from {exclude_filename} \
                             --delete-excluded={delete_excluded} \
+                            --log-file={self.temp_dir}/{folder}.log \
                             {options} \
                             {C.greenH}{local_path} \
                             {C.yellowH}{dest}{C.colorReset}"""
@@ -190,23 +184,14 @@ class rSync_Class():
 
             rsyncCMD=" ".join(rsyncCMD.split())
             colored_command=" ".join(colored_command.split())
-            # colored_command=rsyncCMD
-            # colored_command=colored_command.replace(folder, C.yellowH+local_path+C.colorReset)
-            # print(dest)
-            # colored_command=colored_command.replace(dest, C.yellowH+dest+C.colorReset)
-            # colored_command=colored_command.replace(dry_run, C.redH+dry_run+C.colorReset)
             self.logger.notify(colored_command)
-            # self.logger.notify(rsyncCMD)
 
 
             if prompt:
                 keyb_prompt(msg='', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
 
-            # rcode, stdout, stderr=run_sh(f'cat {stdout_file} >>{stdout_total}')
-            # rcode, stdout, stderr=run_sh(f'cat {stderr_file} >>{stderr_total}')
-
             rcode, stdout, stderr=runCommand(rsyncCMD, logger=self.logger, console=True, stdout_file=stdout_file, stderr_file=stderr_file)
-            self.logger.notify("%s --> %s: [rcode:%s]", local_path, remote_path, rcode)
+            self.logger.notify("%s --> %s: [rcode:%s]", local_path, dest, rcode)
 
 
 
@@ -236,7 +221,7 @@ class rSync_Class():
     #           - ''
     #
     #==============================================================
-    def processProfile(self, profile: dict, delete_excluded: bool=False, dry_run='--dry-run'):
+    def processProfile_OLD(self, profile: dict, delete_excluded: bool=False, dry_run='--dry-run'):
 
         # ---- check local directory
         root_local_path=profile.get("base_local_root_dir")
