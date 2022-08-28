@@ -1,15 +1,14 @@
 main:
     runtime_dir: ${env:ln_RUNTIME_DIR}/lnSync
     dry-run: ${env:lnSync_DRY_RUN}
-    tmp_dir: /tmp/lnSync
+    temp_dir: /tmp/lnSync
+    rclone_config_file: ${env:HOME}/.ln/bin/rclone/rclone.conf # /home/loreto/.ln/bin/rclone/rclone.conf
 
-
+# rclone ed rsync devono avere le stesse entrate anche se vuote....
 rclone:
     # https://rclone.org/local/#skip-links
     bin: ${env:HOME}/.ln/bin/rclone/rclone
-    config_file: ${env:HOME}/.ln/bin/rclone/rclone.conf # /home/loreto/.ln/bin/rclone/rclone.conf
-    exclude_files: ${get:common_exclude_files.patterns}
-    tmp_dir: /tmp/rclone
+    temp_dir: /tmp/rclone
     options:
         -   "sync"
         -   "-v"
@@ -20,9 +19,7 @@ rclone:
 
 rsync:
     bin: /usr/bin/rsync
-    rclone_config_file: ${get:rclone.config_file}      # mi serve anche per rsync per vedere i nodi di destinazione
-    exclude_files: ${get:common_exclude_files.patterns}
-    tmp_dir: /tmp/rsync
+    temp_dir: /tmp/rsync
     options:
         - "-e 'ssh -i /home/loreto/.ssh/Ln_ed25519'"
         - "--recursive"
@@ -43,7 +40,6 @@ rsync:
         # - "--log-file=/tmp/rsync/ln_rsync.log"
 
 common_exclude_files:
-    patterns:
         - "**/.cache/**"
         - "**/.git/**"
         - "**/__pycache__/**"

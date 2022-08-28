@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 27-08-2022 12.17.09
+# Date .........: 28-08-2022 08.51.21
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -62,9 +62,11 @@ def ParseInput():
 
     parser.add_argument('--delete-excluded', help='detele excluded files', action='store_true')
     parser.add_argument('--runtime-dir', required=False, type=check_dir, default=None, help='etc directory')
-    parser.add_argument('--rclone', required=False, action='store_true', help='use rclone so sync')
-    parser.add_argument('--rsync', required=False, action='store_true', help='use rsync so sync')
     parser.add_argument('--no-prompt', required=False, action='store_true', help='use rsync so sync')
+
+    rclone_rsync=parser.add_mutually_exclusive_group(required=True)
+    rclone_rsync.add_argument('--rclone', action='store_true', help='use rclone so sync')
+    rclone_rsync.add_argument('--rsync', action='store_true', help='use rsync so sync')
 
 
     args = parser.parse_args()
@@ -103,11 +105,12 @@ if __name__ == '__main__':
     LoretoDict.setLogger(mylogger=logger)
 
     # read all configuration data
-    lnSync=lnSync_Class(main_config_filename='conf/main_config.yaml', logger=logger)
+    lnSync=lnSync_Class(main_config_filename='conf/main_config.yaml', fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
+    # lnSync=lnSync_Class(main_config_filename='conf/main_config.yaml', ogger=logger)
 
     # rprocess profile
     dry_run='' if args.go else '--dry-run'
 
-    lnSync.processProfile(profile_name=args.profile, delete_excluded=args.delete_excluded, dry_run=dry_run, prompt=(not args.no_prompt), fRCLONE=args.rclone, fRSYNC=args.rsync)
+    lnSync.processProfileV2(profile_name=args.profile, delete_excluded=args.delete_excluded, dry_run=dry_run, prompt=(not args.no_prompt))
 
 

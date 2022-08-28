@@ -1,6 +1,6 @@
 
 ln_base_profile:
-    base_local_root_dir: ${env:HOME}/.ln
+    root_local_dir: ${env:HOME}/.ln
     folders:
         -   config
         -   envars
@@ -23,7 +23,7 @@ ln_base_profile:
 
 
 ln_to_22_23_31_41:
-    base_remote_root_dir: /home/pi/.ln
+    root_remote_dir: /home/pi/.ln
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi22
@@ -33,33 +33,33 @@ ln_to_22_23_31_41:
 
 
 ln_to_22:
-    base_remote_root_dir: /home/pi/.ln
+    root_remote_dir: /home/pi/.ln
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi22
 
 ln_to_23:
-    base_remote_root_dir: /home/pi/.ln
+    root_remote_dir: /home/pi/.ln
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi23
 
 ln_to_31:
-    base_remote_root_dir: /home/pi/.ln
+    root_remote_dir: /home/pi/.ln
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi31
 
 ln_to_41:
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
-    base_remote_root_dir: /home/pi/.ln
+    root_remote_dir: /home/pi/.ln
     remote_nodes:
         -   lnpi41
 
 
 ln_to_lndisk:
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
-    base_remote_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk/.ln
+    root_remote_dir: /media/loreto/LnDataDisk/Filu/LnDisk/.ln
     remote_nodes:
         -   local
 

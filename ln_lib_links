@@ -1,0 +1,484 @@
+#!/bin/bash
+#
+# updated by ...: Loreto Notarantonio
+# Date .........: 2021-10-06
+# --------------------------------------------------------------
+# - crea i link logici per alcuni moduli presenti nella LnPyLib
+# --------------------------------------------------------------
+#
+source "${HOME}/.ln/init/Loretorc_Variables" >/dev/null
+
+
+function create_module_path_list() {
+    # directory link
+    colorama_043="${LNLIB_DIR}/Color/colorama_043                       ="
+
+    # LnPyLib
+    lnColor="${LNLIB_DIR}/Color/LnColor.py                              ColorLN.py"
+
+    # LnPyLib/Logger
+    lnLogger="${LNLIB_DIR}/Logger/LnLogger.py                           LoggerLN.py"
+    lnLogger_noZip="${LNLIB_DIR}/Logger/LnLogger_noZip.py               LoggerLN.py"
+    nullLogger="${LNLIB_DIR}/Logger/nullLogger.py                       NullLoggerLN.py"
+    LnLogger_Zip_addLevel="${LNLIB_DIR}/Logger/LnLogger_Zip_addLevel.py  LoggerLN.py"
+    coloredLogger="${LNLIB_DIR}/Logger/ColoredLogger.py                 ="
+
+
+
+
+    # lnPrompt="${LNLIB_DIR}/Prompt/LnPrompt.py   Moved to LnUtils                        PromptLN.py"
+    mail="${LNLIB_DIR}/Mail/sendMail.py                                 SendMailLN.py"
+    pathMonkey="${LNLIB_DIR}/MonkeyFunctions/PathMonkey.py                 PathLN_monkey.py"
+    benedictMonkey="${LNLIB_DIR}/MonkeyFunctions/benedictMonkey.py         BenedictLN_monkey.py"
+    nobMonkey="${LNLIB_DIR}/MonkeyFunctions/nobMonkey.py                NobMonkey.py"
+    ssh2_class="${LNLIB_DIR}/Ssh/ssh2_class.py                          SSHClassLN.py"
+    resolveDictVars="${LNLIB_DIR}/Configuration/resolveDictVars.py      ResolveDictVarsLN.py"
+    # configurationLoader="${LNLIB_DIR}/Configuration/configurationLoader.py   configurationLoaderLN.py"
+    # configurationLoader="${LNLIB_DIR}/Configuration/configurationLoader_constructors.py   ConfigurationLoaderLN.py"
+
+    setPaths="${LNLIB_DIR}/Configuration/SetPaths.py                     SetPathsLN.py"
+    regex="${LNLIB_DIR}/Regex/LnRegex.py                                 ="
+    sendTelegramMessage="${LNLIB_DIR}/Telegram/SendTelegramMessage.py      SendTelegramMessage.py"
+    run_sh="${LNLIB_DIR}/System/subprocessRun.py                  ="
+    runCommand="${LNLIB_DIR}/System/subprocessPopen.py                  ="
+
+
+    # LnPyLib/Dictionary
+    YamlLoaderLN_wzip_new="${LNLIB_DIR}/Dictionary/YamlLoaderLN_wzip_new.py            YamlLoaderLN.py"
+    read_ini_file="${LNLIB_DIR}/Dictionary/read_ini_file.py                 ="
+    read_yaml_file="${LNLIB_DIR}/Dictionary/read_yaml_file.py                 ="
+    LoadYamlFile_Class="${LNLIB_DIR}/Dictionary/LoadYamlFile_Class.py                 ="
+    # LnDictionary="${LNLIB_DIR}/Dictionary/LnDictionary.py                 ="
+    # yamlLoader_class="${LNLIB_DIR}/YamlLoader/yamlLoader_Class.py       yamlLoader_ClassLN.py"
+
+    # LnPyLib/Crypt
+    # crypt_fernet="${LNLIB_DIR}/Crypt/FernetLN.py                        fernetLN.py"
+    crypt_fernet="${LNLIB_DIR}/Crypt/fernetLN_Class.py                    FernetLN.py"
+
+    # LnPyLib/Time
+    timerLN="${LNLIB_DIR}/Time/Timer_LN.py                                    TimerLN.py"
+    suntimeLN="${LNLIB_DIR}/Time/suntimes_LN.py                               SuntimesLN.py "
+    timeLN="${LNLIB_DIR}/Time/Time_LN.py                                    TimeLN.py"
+
+    # LnPyLib/MQTT
+    mqttSingle="${LNLIB_DIR}/MQTT/MqttSingle.py                             ="
+
+    # LnPyLib/Network
+    HttpLN="${LNLIB_DIR}/Network/HttpLN_Class.py                           ="
+    arpScan="${LNLIB_DIR}/Network/arpScan.py                                     ="
+    hostScanner="${LNLIB_DIR}/Network/HostScanner_Class.py                        ="
+    netUtils="${LNLIB_DIR}/Network/netUtils.py                                   ="
+
+    # LnPyLib/Threading
+    threads="${LNLIB_DIR}/Threading/ThreadersLN_Class.py                        ="
+
+    # LnPyLib/SQLite
+    SQLite_LnClass="${LNLIB_DIR}/SQLite/SQLite_LnClass.py               ="
+    MariaDB_LnClass="${LNLIB_DIR}/mariaDB/MariaDB_LnClass.py               ="
+    MariaDB_LnClass_V2="${LNLIB_DIR}/mariaDB/MariaDB_LnClass_V2.py               ="
+    MariaDB_Utils="${LNLIB_DIR}/mariaDB/MariaDB_Utils_Class.py               ="
+
+    MariaDB_Pool_Class="${LNLIB_DIR}/mariaDB/MariaDB_Pool_Class.py               ="
+    pyMySqlPool="${LNLIB_DIR}/mariaDB/pyMySqlPool_036.py                        pyMySqlPool.py"
+
+    # LnPyLib/Utils
+    splitString="${LNLIB_DIR}/Utils/splitString.py                      SplitStringLN.py"
+    nameSpace="${LNLIB_DIR}/Utils/nameSpace.py                          NameSpaceLN.py"
+    bytesToHuman="${LNLIB_DIR}/Utils/bytesToHuman.py                    BytesToHumanLN.py"
+    debugInfo="${LNLIB_DIR}/Utils/debugInfo.py                          DebugInfoLN.py"
+    md5_file="${LNLIB_DIR}/Utils/md5_file.py                            ="
+    diff_file="${LNLIB_DIR}/Utils/diff_file.py                          Diff_fileLN.py"
+    fileRead="${LNLIB_DIR}/Utils/fileRead.py                            FileReadLN.py"
+    fileUtils="${LNLIB_DIR}/Utils/fileUtils.py                            ="
+    getFuncName="${LNLIB_DIR}/Utils/getFuncName.py                      GetFuncNameLN.py"
+    convertionsUtils="${LNLIB_DIR}/Utils/convertionsUtils.py                      ="
+
+    # sh_command="${LNLIB_DIR}/Utils/sh_command.py                        sh_commandLN.py"
+    checkProcessName="${LNLIB_DIR}/Utils/checkProcessName.py            ="
+    # toYaml="${LNLIB_DIR}/Utils/toYaml.py                                ToYaml.py"
+    # toDict="${LNLIB_DIR}/Utils/toDict.py                                ToDict.py"
+    # dotmap="${LNLIB_DIR}/Utils/dict_DOTMAP.py                           DotmapLN.py"
+    keyb_prompt="${LNLIB_DIR}/Utils/keyboard_prompt.py                           ="
+
+    # Source subdir
+    # parseInput="${LNLIB_DIR}/ParseInput/${prj_name,,}_ParseInput.py     Source/parseInputLN.py"
+    # parseInput="${LNLIB_DIR}/ParseInput/${prj_name}_ParseInput.py     Source/parseInputLN.py"
+}
+
+
+#############################################
+# -
+#############################################
+function checkInput() {
+    inp_args=$@
+    g_GO=0
+    createZipz='no'
+
+    # remove parameters-key from input arguments
+    for word in $@ ; do
+        # The // replaces all occurences of the substring ($word) with the content between / and }. In this case nothing.
+        # if [ $word == '--dry' ]; then
+        #     g_GO=0
+        #     inp_args=${inp_args//$word/}
+
+        if [ $word == '--go' ]; then
+            g_GO=1
+            inp_args=${inp_args//$word/}
+
+        elif [ $word == '--zip' ]; then
+            createZip='yes'
+            inp_args=${inp_args//$word/}
+
+        fi
+
+    done
+
+    _rest=$inp_args # ciò che rimane dell'input
+
+    # strip text
+    g_rest=$(echo $_rest)
+}
+
+
+#############################################
+# - https://stackoverflow.com/questions/1885525/how-do-i-prompt-a-user-for-confirmation-in-bash-script
+#############################################
+function getConfirmation() {
+    module=$1
+    lnk=$2
+    # read -p "Continue (y/n)?" -r -n 1 choice
+    read -p "r[eplace] s[kip] q[quit]" choice </dev/tty
+    case "$choice" in
+        r|R ) echo "replacing";;
+        s|S ) echo "skipping";;
+        x|X|q|Q )
+            echo "exiting...!"
+            exit 1
+        ;;
+        * ) echo "invalid... skipping";;
+    esac
+    choice=$(echo "${choice,,}") # to lowercase()
+
+    if [[ "$choice" == "r" ]]; then
+        esegui "ln -sf $module $lnk"
+    # else
+        # echo "      skipping...."
+    fi
+}
+
+
+#############################################
+# -
+#############################################
+function esegui() {
+    cmd=$1
+    # echo -e "   $dry_run executing: $cmd"
+    echo -e "       $dry_run $cmd"
+    if [[ $g_GO -eq 1 ]]; then
+        eval $cmd
+        rCode=$?
+        [[ ! "$rCode" -eq 0 ]] && exit $rCode
+        echo
+    fi
+}
+
+
+
+
+
+function main_modules() {
+    # echo "$parseInput"          >>$temp_file
+    echo "$lnLogger"         >>$temp_file
+    # echo "$lnLogger_config"  >>$temp_file
+    # echo "$configurationLoader" >>$temp_file
+    # echo "$setPaths"            >>$temp_file
+
+}
+
+function mandatory() {
+    echo "$colorama_043"    >>$temp_file
+    echo "$lnColor"         >>$temp_file
+    echo "$resolveDictVars" >>$temp_file
+
+    echo "$pathMonkey" >>$temp_file
+    echo "$benedictMonkey" >>$temp_file
+    # echo "$lnPrompt"        >>$temp_file
+}
+
+function get_project_module_list() {
+
+    case "$prj_name" in
+
+        "lnSync") # telegram_bot
+            PRJ_LNLIB='Source/LnLib'
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            # echo "$convertionsUtils"               >>$temp_file
+            echo "$read_ini_file"               >>$temp_file
+            echo "$LoadYamlFile_Class"               >>$temp_file
+            echo "$run_sh"               >>$temp_file
+            echo "$runCommand"               >>$temp_file
+            echo "$coloredLogger"               >>$temp_file
+            echo "$fileUtils"               >>$temp_file
+            echo "$keyb_prompt"               >>$temp_file
+         ;;
+
+        "TelegramBot") # telegram_bot
+            PRJ_LNLIB='Source/LnLib'
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            echo "$LnLogger_Zip_addLevel"     >>$temp_file
+            echo "$YamlLoaderLN_wzip_new"  >>$temp_file
+
+            echo "$mqttSingle"               >>$temp_file
+            echo "$timerLN"               >>$temp_file
+            echo "$convertionsUtils"               >>$temp_file
+
+            echo "$MariaDB_Pool_Class"               >>$temp_file
+            echo "$pyMySqlPool"               >>$temp_file
+         ;;
+
+        "Mqtt-Client") # telegram_bot
+            PRJ_LNLIB='Source/LnLib'
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            echo "$LnLogger_Zip_addLevel"     >>$temp_file
+            echo "$YamlLoaderLN_wzip_new"  >>$temp_file # richiede benedictMonkey
+
+            echo "$timerLN"               >>$temp_file
+            echo "$timeLN"               >>$temp_file
+            echo "$convertionsUtils"              >>$temp_file
+            echo "$HttpLN"               >>$temp_file
+            echo "$suntimeLN"               >>$temp_file
+
+            echo "$MariaDB_Pool_Class"               >>$temp_file
+            echo "$pyMySqlPool"               >>$temp_file
+
+            echo "$sendTelegramMessage"               >>$temp_file
+            echo "$netUtils"               >>$temp_file
+         ;;
+
+        "Mqtt-Panel") # telegram_bot
+            PRJ_LNLIB='Source/LnLib'
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            echo "$lnLogger_noZip"     >>$temp_file
+            # echo "$crypt_fernet"        >>$temp_file
+            echo "$yamlLoader"          >>$temp_file # richiede benedictMonkey
+            # echo "$toYaml"              >>$temp_file
+            # echo "$timerLN"               >>$temp_file
+            # echo "$timeLN"               >>$temp_file
+            # echo "$HttpLN"               >>$temp_file
+            # echo "$suntimeLN"               >>$temp_file
+            # echo "$MariaDB_LnClass"               >>$temp_file
+         ;;
+
+        "DeviceDiscovery")
+            PRJ_LNLIB='Source/LnLib'
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            # main_modules
+            echo "$LnLogger_Zip_addLevel"     >>$temp_file
+            echo "$YamlLoaderLN_wzip_new"  >>$temp_file
+            echo "$MariaDB_Pool_Class"               >>$temp_file
+            echo "$pyMySqlPool"               >>$temp_file
+
+            echo "$hostScanner"     >>$temp_file
+            echo "$HttpLN" >>$temp_file
+            echo "$threads"  >>$temp_file
+            echo "$convertionsUtils"              >>$temp_file
+
+
+            echo "$sh_command"               >>$temp_file
+         ;;
+
+
+
+        "sshReverseTunnel")
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            mandatory
+            echo "$ssh2_class" >>$temp_file
+            echo "$mail" >>$temp_file
+         ;;
+
+        "PyMount")
+            PRJ_LNLIB='Source/lnLib'
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            main_modules
+            echo "$colorama_043"    >>$temp_file
+            echo "$lnColor"         >>$temp_file
+            echo "$dotmap"              >>$temp_file
+            echo "$toYaml"              >>$temp_file
+            echo "$sh_command"      >>$temp_file
+         ;;
+
+
+        "fileSync")
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            echo "$yamlLoader"      >>$temp_file
+            echo "$nameSpace"      >>$temp_file
+            # echo "$parseInput"      >>$temp_file
+            echo "$lnColor"         >>$temp_file
+            echo "$sh_command"      >>$temp_file
+            echo "$colorama_043"    >>$temp_file
+         ;;
+
+
+        "Ansible")
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            # echo "$parseInput"      >>$temp_file
+            echo "$ssh2_class"      >>$temp_file
+            echo "$yamlLoader_class" >>$temp_file
+            # echo "$lnPrompt"        >>$temp_file
+            # echo "$md5_file"        >>$temp_file
+            echo "$configurationLoader" >>$temp_file
+            echo "$resolveDictVars"     >>$temp_file
+            echo "$fileRead"        >>$temp_file
+            echo "$getFuncName"        >>$temp_file
+            echo "$sh_command"        >>$temp_file
+            echo "$diff_file"        >>$temp_file
+
+            echo "$pathMonkey"     >>$temp_file
+            echo "$benedictMonkey" >>$temp_file
+            echo "$lnLogger"        >>$temp_file
+            echo "$nameSpace"       >>$temp_file
+            echo "$lnColor"         >>$temp_file
+            echo "$colorama_043"    >>$temp_file
+         ;;
+
+
+        "eBooks")
+            echo
+            echo "- Project  $prj_name hase been recognized"
+            echo
+            # echo "$parseInput"          >>$temp_file
+            # echo "$lnPrompt"            >>$temp_file
+            echo "$configurationLoader" >>$temp_file
+            echo "$resolveDictVars"     >>$temp_file
+            echo "$regex"               >>$temp_file
+
+            echo "$pathMonkey"          >>$temp_file
+            echo "$benedictMonkey"      >>$temp_file
+            echo "$lnLogger"            >>$temp_file
+            echo "$nameSpace"           >>$temp_file
+            echo "$lnColor"             >>$temp_file
+            echo "$colorama_043"        >>$temp_file
+         ;;
+
+
+
+        * )
+            echo "-----------------------------------------------------------------"
+            echo "- Project  $prj_name not recognized "
+            echo "- Be sure "
+            echo "-----------------------------------------------------------------"
+            exit 1
+            ;;
+    esac
+}
+
+function display() {
+    data=$*
+    echo -e $data
+}
+
+#############################################################
+#           M A I N
+#############################################################
+
+
+# - Search for LnPyLib directory
+    LNLIB_DIR="${ln_GIT_REPO_DIR}/Python/LnPyLib"
+    if [ ! -d "$LNLIB_DIR" == "" ]; then
+        echo "LnPyLib NOT FOUND in:"
+        echo $dirs
+        exit 1
+    fi
+
+# - Get prj_name and relativo module list
+    prj_dir="${PWD}"
+    prj_name=$(basename ${prj_dir})
+    g_GO=0 && dry_run="[DRY-RUN]"
+
+    checkInput $@
+
+    temp_file='/tmp/liblinks_modules'; echo >$temp_file
+
+    create_module_path_list
+    get_project_module_list
+    if [ "$createZip" == "yes" ]; then
+        zipName="$prj_dir/Source/lnLib.zip"            
+    fi
+
+
+    while read  source_module_path log_link_name ; do
+        [[ -z $source_module_path ]] && continue
+        if [ "$log_link_name" == "=" ]; then
+            log_link_name=$(basename $source_module_path)
+        fi
+        link_name=${PRJ_LNLIB}/${log_link_name}
+
+
+            # ------------------------
+            # - se è una dir devo cancellarla altrimenti mi crea
+            # - un'infinità di sub-dirs nel sorgente
+            # - è giusto perché di fatto va a scrivere nel source
+            # - Per i file posso utilizzare il parametro --force
+            # ------------------------
+        if [ -d "$source_module_path" ]; then
+            echo -e "       ${cyanH} - it's a directory. LogicalLink will be removed!${NC}"
+            esegui "rm -rf $link_name"
+            esegui "ln -s $source_module_path $link_name"
+
+        elif [[ ! -f "$source_module_path"  ]]; then
+            echo -e "       ${redH} $source_module_path doesn't exists${NC}"
+            exit 1
+
+        # elif [[ "$link_name" =~ "yaml" ]]; then
+        #     esegui "cp -n $source_module_path $link_name" # do not overwrite
+
+        elif [[ -L "$link_name"  ]]; then
+            echo -e "       ${cyanH} $link_name already exists as LINK${NC}"
+            curr_ptr="$(readlink -f ${link_name})"
+            if [ "$curr_ptr" == "$source_module_path" ]; then
+                echo -e "           ${cyanH} and points right${NC}"
+            else
+                echo -e "           ${redH} but its pointer is wrong${NC}"
+                esegui "ln -sf $source_module_path $link_name"
+            fi
+                
+
+        elif [[ -f "$link_name"  ]]; then
+            echo -e "       ${cyanH} $link_name already exists as FILE${NC}"
+            echo -e "       ${cyanH} ....skipping${NC}"
+
+        elif [ -f "$source_module_path" ]; then
+            esegui "ln -sf $source_module_path $link_name"
+
+        else
+            echo -e "     ${redH}$source_module_path NOT FOUND${NC}"
+
+        fi
+        echo
+    done < "$temp_file"
+
+# set -x
+if [ $g_GO -eq 0 ]; then
+    echo -e "       ${purpleH}enter --go to execute.${NC}\n"
+else
+    ls -la --color ${PRJ_LNLIB}
+fi
+

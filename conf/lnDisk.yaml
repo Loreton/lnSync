@@ -1,6 +1,6 @@
 #
 # updated by ...: Loreto Notarantonio
-# Date .........: 27-08-2022 12.40.23
+# Date .........: 28-08-2022 09.04.28
 #
 
 #########################################################
@@ -14,31 +14,38 @@ local_vars:
 
 
 Antonietta_gMail:
-    base_local_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk
-    base_remote_root_dir:
+    root_local_dir: /media/loreto/LnDataDisk/Filu/LnDisk
+    root_remote_dir:
     folders: Antonietta
     remote_nodes: agentile0702
 
 
 
 LnDisk_to_gmail:
-    base_local_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk
-    base_remote_root_dir:
+    root_local_dir: /media/loreto/LnDataDisk/Filu/LnDisk
+    root_remote_dir:
     folders: ${get:local_vars.LnDisk_partial}
     remote_nodes: nloreto notaloreto loretonota etonota
 
 
 
 LnDisk_to_lnpi31:
-    base_local_root_dir: /media/loreto/LnDataDisk/Filu/LnDisk
-    base_remote_root_dir: /mnt/Toshiba_1TB_LnDisk/Filu/LnDisk
+    root_local_dir: /media/loreto/LnDataDisk/Filu/LnDisk
+    root_remote_dir: /mnt/Toshiba_1TB_LnDisk/Filu/LnDisk
     folders: ${get:local_vars.LnDisk_partial} Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
     remote_nodes: lnpi31
 
 
 LnDisk_to_bkup2-500GB:
-    base_local_root_dir: /media/loreto/LnDataDisk/Filu
-    base_remote_root_dir: /media/loreto/bkup2-500GB/Filu
+    root_local_dir: /media/loreto/LnDataDisk/Filu
+    root_remote_dir: /media/loreto/bkup2-500GB/Filu
+    folders: DiskBackup MyData LnDisk
+    remote_nodes: local
+
+
+LnDisk_to_LN1TB_A:
+    root_local_dir: /media/loreto/LnDataDisk/Filu
+    root_remote_dir: /media/loreto/LN1TB_A/Filu
     folders: DiskBackup MyData LnDisk
     remote_nodes: local
 
