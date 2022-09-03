@@ -1,1 +1,1 @@
-/media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Logger/ColoredLogger.py
+/home/loreto/GIT-REPO/Python/LnPyLib/Logger/ColoredLogger.py

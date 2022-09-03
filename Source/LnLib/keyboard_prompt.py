@@ -1,1 +1,1 @@
-/media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Utils/keyboard_prompt.py
+/home/loreto/GIT-REPO/Python/LnPyLib/Utils/keyboard_prompt.py

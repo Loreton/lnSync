@@ -1,1 +1,1 @@
-/media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Dictionary/read_ini_file.py
+/home/loreto/GIT-REPO/Python/LnPyLib/Dictionary/read_ini_file.py

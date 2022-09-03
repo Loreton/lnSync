@@ -2,6 +2,7 @@
 ln_base_profile:
     root_local_dir: ${env:HOME}/.ln
     folders:
+        -   bin
         -   config
         -   envars
         -   init

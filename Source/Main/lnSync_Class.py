@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 28-08-2022 11.40.05
+# Date .........: 02-09-2022 18.22.51
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -49,13 +49,18 @@ class lnSync_Class():
 
         if self.isRCLONE:
             _config=main_config['rclone']
+            self.rclone_bin=_config['bin']
+            self.pgm_bin=self.rclone_bin
+
         elif self.isRSYNC:
             _config=main_config['rsync']
+            self.rsync_bin=_config['bin']
+            self.pgm_bin=self.rsync_bin
+
         else:
             self.logger.critical('rclone or rsync must be specified.')
             sys.exit(1)
 
-        self.pgm_bin  = _config['bin']
         self.temp_dir = _config['temp_dir']
         if not os.path.exists(self.temp_dir):
                 os.mkdir(self.temp_dir)
