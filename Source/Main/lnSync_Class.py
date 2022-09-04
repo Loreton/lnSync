@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 04-09-2022 12.52.26
+# Date .........: 04-09-2022 18.10.55
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -18,7 +18,7 @@ from ColoredLogger import getColors; C=getColors()
 
 from subprocessPopen import runCommand
 
-from LoadYamlFile_Class import LoadYamlFile
+from LoadYamlFile_Class_V02 import LoadYamlFile_V02 as LoadYamlFile
 from read_ini_file import readIniFile
 from keyboard_prompt import keyb_prompt
 
@@ -32,6 +32,7 @@ class lnSync_Class():
         self.logger=logger
 
         main_config             = self.load_profiles(filename=main_config_filename)
+        import pdb; pdb.set_trace(); pass # by Loreto
         main_data               = main_config['main']
         self.rclone_config_file = main_data['rclone_config_file']
 

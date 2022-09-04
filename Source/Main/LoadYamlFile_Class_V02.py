@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 04-09-2022 12.43.34
+# Date .........: 04-09-2022 19.18.51
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -27,7 +27,8 @@ class nullLogger():
 # Supporta anche l'esecuzione come zip
 ############################################
 class LoadYamlFile_V02(object):
-
+    # sotto VsCode lanciare il seguente comando...
+    # /home/loreto/.ln/init/Loretorc_Variables
     def __init__(self, filename, paths=['conf', 'common_includes', 'templates'], logger=nullLogger):
         self.logger=logger
         script_path=Path(sys.argv[0]).resolve()
@@ -45,32 +46,19 @@ class LoadYamlFile_V02(object):
 
         self._dict=LoretoDict(self.read_file(filename))
         self.resolve_include(d=self._dict)
-        self._dict=self.resolve_vars(self._dict)
+
+        # ---- finally
+        # self._dict=self.resolve_vars(self._dict)
+        self._dict=self.resolve_parent(self._dict)
 
 
     def config(self):
         return self._dict
 
 
-    def read_file_prev(self, filename):
-        if not os.path.exists(filename):
-            self.logger.error('File: %s not found', filename)
-            sys.exit(1)
-
-        with open(filename, 'r') as f:
-            content=f.read() # single string
-
-        if isinstance(content, dict):
-            my_dict=content
-        else:
-            my_dict=yaml.load(content, Loader=yaml.SafeLoader)
-
-        ''' l'include Non va bene perché il secondo file va in override al primo '''
-        my_dict=self.resolve_vars(my_dict) # risolve le variabili interne al file
-        return my_dict
-
     def read_file(self, filename):
         # it's on filesystem
+        self.logger.debug('reding file: %s', filename)
         if os.path.exists(filename):
             with open(filename, 'r') as f:
                 content=f.read() # single string
@@ -90,7 +78,7 @@ class LoadYamlFile_V02(object):
             my_dict=yaml.load(content, Loader=yaml.SafeLoader)
 
         ''' l'include Non va bene perché il secondo file va in override al primo '''
-        my_dict=self.resolve_vars(my_dict) # risolve le variabili interne al file
+        my_dict=self.resolve_vars(my_dict) # risolve le variabili interne del nuovo file
         return my_dict
 
 
@@ -105,7 +93,7 @@ class LoadYamlFile_V02(object):
         fFOUND=True
         while fFOUND:
             fFOUND=False
-            flat_dict=d.flatten()
+            flat_dict=d.flattenT1a(key_str="include_files", explode_list=False)
             for keypath, value in flat_dict.items():
                 if keypath.endswith("include_files"): # ex: _!include: conf/lnprofile.yaml
                     fFOUND=True
@@ -131,70 +119,105 @@ class LoadYamlFile_V02(object):
     #      @@_get.key1.key2...
     # ----------------------------------------------
     def resolve_vars(self, d: dict) -> dict:
-        ln_dict=LoretoDict(d)
-        flat_dict=ln_dict.flattenT1()
-        for keypath, value in flat_dict.items():
-            if isinstance(value, list) and 'post_commands' in keypath:
-                self.resolve_in_string(ln_dict, keypath, value)
 
-            elif isinstance(value, str):
-                # value=os.path.expandvars(value)
-                self.resolve_in_string(ln_dict, keypath, value)
+        pfx_generic='${'
+        pfx_get='${get:'
+        pfx_get_dict='${get_dict:'
+        pfx_get_list='${get_list:'
+        pfx_env='${env:'
+
+        ln_dict=LoretoDict(d)
+        flat_dict=ln_dict.flattenT1a(value_str=pfx_generic, explode_list=False)
+
+        for keypath, value in flat_dict.items():
+            if isinstance(value, str):
+                if pfx_generic in value:
+                    self.resolve_envars(prefix=pfx_env, d=ln_dict, keypath=keypath, value=value)
+                    self.resolve_get(prefix=pfx_get, d=ln_dict, keypath=keypath, value=value)
+                    self.resolve_get_dict(prefix=pfx_get_dict, d=ln_dict, keypath=keypath, value=value)
+
 
         return ln_dict
 
 
-    def resolve_in_string(self, ln_dict, keypath, value):
-        # ------------------------------
-        def split_var(value, prefix, suffix):
-            left_data, rest = value.split(prefix, 1)
-            var_name, rest = rest.split(suffix, 1)
-            return left_data, var_name, rest
-        # ------------------------------
-
-        pfx_get_dict='${get_dict:'
-        pfx_get_list='${get_list:'
-        pfx_get='${get:'
-        pfx_env='${env:'
-
-        if isinstance(value, str):
-            value=os.path.expandvars(value)
-            # ------------------------------
-            # folders=/tmp/${env:main.MyData}/file.txt
-            # ------------------------------
-            while pfx_env in value:
-                left_data, var_name, rest=split_var(value=value, prefix=pfx_env, suffix="}")
-                env_value=os.environ[var_name]
-                value=left_data+env_value+rest # importante impostarlo per poter usire dal loop
 
 
-                value=ln_dict.set_keypath(keypath, value)
+    # ------------------------------
+    def split_var(self, value, prefix, suffix):
+        left_data, rest = value.split(prefix, 1)
+        var_name, rest = rest.split(suffix, 1)
+        return left_data, var_name, rest
+    # ------------------------------
 
-            # ------------------------------
-            # folders=${get_dict:main.MyData}
-            # folders._!_remove_this_key=${get_dict:main.MyData}  remove_this_key will be removed
-            # folders=/tmp/${get:main.MyData}
-            # folders=/tmp/${get:main.MyData}/file.txt
-            # ------------------------------
-            while pfx_get_dict in value:
-                left_data, var_name, rest=split_var(value=value, prefix=pfx_get_dict, suffix="}")
-                value=ln_dict.get_keypath(var_name)
+    # ------------------------------
+    # folders=/tmp/${env:main.MyData}/file.txt
+    # ------------------------------
+    def resolve_envars(self, prefix, d, keypath, value):
+        value=os.path.expandvars(value)
+        while prefix in value:
+            left_data, var_name, rest=self.split_var(value=value, prefix=prefix, suffix="}")
+            env_value=os.environ[var_name]
+            value=left_data+env_value+rest # importante impostarlo per poter usire dal loop
+            value=d.set_keypath(keypath, value)
 
-                if keypath.endswith('remove_this_key'):
-                    parent, last_key = keypath.rsplit('.', 1)
-                    ptr=ln_dict.get_keypath(parent) # ptr to parent
-                    del ptr[last_key]                  # remove xxxx_dummy_key entry
-                    value=ln_dict.merge(keypath=parent, d2=value, override=False) # update current
 
-                else:
-                    value=ln_dict.merge(keypath=keypath, d2=value, override=False)
+    # ------------------------------
+    # folders=${get_dict:main.MyData}
+    # folders._!_remove_this_key=${get_dict:main.MyData}  remove_this_key will be removed
+    # folders=/tmp/${get:main.MyData}
+    # folders=/tmp/${get:main.MyData}/file.txt
+    # ------------------------------
+    def resolve_get_dict(self, prefix, d, keypath, value):
+        while prefix in value:
+            left_data, var_name, rest=self.split_var(value=value, prefix=prefix, suffix="}")
+            value=d.get_keypath(var_name)
 
-            # ------------------------------
-            # folders=${get:main.MyData}
-            # folders=/tmp/${get:main.MyData}
-            # folders=/tmp/${get:main.MyData}/file.txt
-            # ------------------------------
-            while pfx_get in value:
-                left_data, var_name, rest=split_var(value=value, prefix=pfx_get, suffix="}")
-                value=ln_dict.get_keypath(var_name)
-                ln_dict.set_keypath(keypath, value)
+            if keypath.endswith('remove_this_key'):
+                parent, last_key = keypath.rsplit('.', 1)
+                ptr=d.get_keypath(parent) # ptr to parent
+                del ptr[last_key]                  # remove xxxx_dummy_key entry
+                value=d.merge(keypath=parent, d2=value, override=False) # update current
+
+            else:
+                value=d.merge(keypath=keypath, d2=value, override=False)
+
+
+
+
+    # ------------------------------
+    # folders=${get:main.MyData}
+    # folders=/tmp/${get:main.MyData}
+    # folders=/tmp/${get:main.MyData}/file.txt
+    # ------------------------------
+    def resolve_get(self, prefix, d, keypath, value):
+        while prefix in value:
+            left_data, var_name, rest=self.split_var(value=value, prefix=prefix, suffix="}")
+            value=d.get_keypath(var_name)
+            d.set_keypath(keypath, value)
+
+
+    # ------------------------------
+    # folders=${get:main.MyData}
+    # folders=/tmp/${get:main.MyData}
+    # folders=/tmp/${get:main.MyData}/file.txt
+    # ------------------------------
+    def resolve_parent(self, d: dict) -> dict:
+        prefix='${get_parent:'
+
+        ln_dict=LoretoDict(d)
+        flat_dict=ln_dict.flattenT1a(value_str=prefix, explode_list=True)
+        for keypath, value in flat_dict.items():
+            if isinstance(value, str):
+                while prefix in value:
+                    left_data, var_name, rest=self.split_var(value=value, prefix=prefix, suffix="}")
+                    # get parent level...
+                    parent, *_path=var_name.split('.')
+                    token=keypath.split('.')
+                    import pdb; pdb.set_trace(); pass # by Loreto
+                    full_keypath=token[:int(parent)] + _path
+                    var_path='.'.join(full_keypath)
+                    value=d.get_keypath(var_path)
+                    d.set_keypath(keypath, value)
+
+
+        return ln_dict

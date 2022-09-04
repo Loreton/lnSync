@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 25-08-2022 13.50.17
+# Date .........: 04-09-2022 19.03.25
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -168,6 +168,31 @@ class LoretoDict(OrderedDict):
                 items.append((new_key, value))
         return dict(items)
 
+
+    #==========================================================
+    # esplode anche le list
+    #==========================================================
+    def flattenT1a(self, d: dict=OrderedDict(), parent_key=False, separator='.', key_str=None, value_str=None, explode_list=False):
+        if not d: d=self
+        items = []
+        for key, value in d.items():
+            new_key = f"{parent_key}{separator}{key}" if parent_key else key
+            if isinstance(value, MutableMapping):
+                items.extend(self.flattenT1a(d=value, parent_key=new_key, separator=separator, key_str=key_str, value_str=value_str, explode_list=explode_list).items())
+            elif explode_list and isinstance(value, list):
+                for k, v in enumerate(value):
+                    items.extend(self.flattenT1a(d={str(k): v}, parent_key=new_key, key_str=key_str, value_str=value_str, explode_list=explode_list).items())
+            else:
+                if key_str and isinstance(value, str):
+                    if key_str in new_key:
+                        items.append((new_key, value))
+                elif value_str and isinstance(value, str):
+                    if value_str in value:
+                        items.append((new_key, value))
+                else:
+                    items.append((new_key, value))
+
+        return dict(items)
 
 
     #==========================================================
