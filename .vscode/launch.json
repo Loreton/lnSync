@@ -10,11 +10,13 @@
             "request": "launch",
             // "program": "__main__.py",
             "stopOnEntry": true,
-            "program": "/tmp/compiled/lnSync.zip",
+            // "program": "/tmp/compiled/lnSync.zip",
+            "program": "__main__.py",
             "console": "integratedTerminal",
             "justMyCode": false,
             "args":[
                 "--profile=ln_to_lndisk",
+                "--rsync",
             ]
         }
     ]

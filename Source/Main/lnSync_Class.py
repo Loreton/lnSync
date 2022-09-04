@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 02-09-2022 18.22.51
+# Date .........: 04-09-2022 12.52.26
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -20,8 +20,6 @@ from subprocessPopen import runCommand
 
 from LoadYamlFile_Class import LoadYamlFile
 from read_ini_file import readIniFile
-# from rClone_Class import rClone_Class
-# from rSync_Class import rSync_Class
 from keyboard_prompt import keyb_prompt
 
 
@@ -167,18 +165,20 @@ class lnSync_Class():
             check_cmd=f"ls -l {remote_path}"
 
         elif node_type=='sftp': #---- rclone --config=./rclone.conf -L lsd lnpi31:/mnt/Toshiba_1TB_LnDisk/Filu
+            ssh_key=node.get('key_file')
+            ssh_port=node.get('port')
+            ssh_host=node.get('host')
+            ssh_user=node.get('user')
+            self.ssh_remote_conn=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}"
 
             if self.isRCLONE:
                 remote_path=f"{node_name}:{path}"
                 check_cmd=f"{self.rclone_bin} --config={self.rclone_config_file} -L lsd {remote_path}"
 
             elif self.isRSYNC:
-                ssh_key=node.get('key_file')
-                ssh_port=node.get('port')
-                ssh_host=node.get('host')
-                ssh_user=node.get('user')
                 remote_path=f"{ssh_user}@{ssh_host}:{path}"
-                check_cmd=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host} ls -l {path}"
+                check_cmd=f"{self.ssh_remote_conn} ls -l {path}"
+                # check_cmd=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host} ls -l {path}"
 
         elif node_type in ['gmail', 'drive']: #---- rclone --config=./rclone.conf -L lsd nloreto:_@NLORETO
 
@@ -209,7 +209,7 @@ class lnSync_Class():
     #- create eclude_file
     #- build rclone command
     #==============================================================
-    def processProfileV2(self, profile_name: str, delete_excluded: bool=False, dry_run='--dry-run', prompt=False):
+    def processProfileV2(self, profile_name: str, delete_excluded: bool=False, dry_run='--dry-run', prompt=False, post_commands=False):
         # ---- read profile to be processed
         profile=self.load_req_profile(profile_name=profile_name)
 
@@ -249,13 +249,10 @@ class lnSync_Class():
                 # -----------------------------
                 # ---- prepare command
                 # -----------------------------
-                if self.isRCLONE:
-                    rclone_config_file=f"--config={self.rclone_config_file}"
-                else:
-                    rclone_config_file=''
+                configuration_file=f"--config={self.rclone_config_file}" if self.isRCLONE else ''
 
                 baseCMD=[self.pgm_bin,
-                            rclone_config_file,
+                            configuration_file,
                             f"--exclude-from {exclude_filename}",
                             f"--log-file {self.temp_dir}/{folder}.log", # se lo metto perdo l'outpus su console
                             delete_excluded,
@@ -293,14 +290,22 @@ class lnSync_Class():
                 # ----------------------------------
                 rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=True, stdout_file=stdout_file, stderr_file=stderr_file)
                 self.logger.notify("%s --> %s: [rcode:%s]", local_path, dest, rcode)
-
-
-
-
-
-
-
                 check_remote_dir=False
+
+            for command in profile['post_commands']:
+                command=f"{self.ssh_remote_conn} {command}"
+                self.logger.notify(command)
+                if post_commands:
+                    import pdb; pdb.set_trace(); pass # by Loreto
+                    run_sh(cmd=command, logger=self.logger, exit_on_error=True)
+                else:
+                    self.logger.warning("   enter --post-commands to execute the above commands")
+
+
+
+
+
+
 
         # ---- execute rclone
 
