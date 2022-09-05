@@ -1,0 +1,7 @@
+"$LNLIB_DIR/Logger/ColoredLogger.py"     =
+"$LNLIB_DIR/Utils/fileUtils.py"          =
+"$LNLIB_DIR/Utils/keyboard_prompt.py"    =
+"$LNLIB_DIR/Dictionary/read_ini_file.py" =
+"$LNLIB_DIR/System/subprocessPopen.py"   =
+"$LNLIB_DIR/System/subprocessRun.py"     =
+"$LNLIB_DIR/Dictionary/LnDict.py"        =
