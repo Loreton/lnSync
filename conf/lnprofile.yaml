@@ -72,5 +72,6 @@ ln_to_lndisk:
     root_remote_dir: /media/loreto/LnDataDisk/Filu/LnDisk/.ln
     remote_nodes:
         -   local
+    post_commands: [] # non ho postcommands per filesystem to filesystem
 
 
