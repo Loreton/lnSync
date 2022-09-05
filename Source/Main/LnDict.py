@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 05-09-2022 15.36.18
+# Date .........: 05-09-2022 15.38.24
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -50,57 +50,6 @@ class LoretoDict(OrderedDict):
 
 
 
-
-    #==========================================================
-    # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
-    #==========================================================
-    def get_keypath_OK0(self, keypath: (str, list), sep: str='.', default={}, exit_on_not_found=True) -> dict:
-        if keypath=='':
-            return self
-        if isinstance(keypath, str):
-            keypath=keypath.split(sep)
-
-        try:
-            ptr=self
-            for key in keypath:
-                ptr=ptr[key]
-            return ptr
-
-        except (KeyError) as error: # https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
-            logger.error(error)
-            logger.error(f"key: {key} part of keypath: {keypath} NOT found")
-            if exit_on_not_found:
-                raise
-
-            if default is None:
-                default={}
-            return default
-
-    #==========================================================
-    # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
-    #==========================================================
-    def set_keypath_OK0(self, keypath: (str, list), value, sep: str='.', create=False) -> dict:
-        # if not keypath: return
-        if isinstance(keypath, str):
-            keypath=keypath.split(sep)
-
-        ptr=self
-        last_key=keypath[-1]
-        for key in keypath[:-1]:
-            if key in ptr:
-                ptr=ptr[key]
-            else:
-                if create:
-                    ptr[key]=OrderedDict()
-                    ptr=ptr[key]
-                else:
-                    logger.error(error)
-                    logger.error("key: %s part of keypath: %s NOT found", key, keypath)
-                    raise
-
-        curr_value=ptr[last_key]
-        ptr[last_key]=value
-        return ptr
 
 
     #==========================================================
