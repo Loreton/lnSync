@@ -20,10 +20,13 @@ ln_base_profile:
         -   '**/runtime/**'
 
     options: []
-
     post_commands:
-        - sudo ln -sf ${ln_CONFIG_DIR}/etc_motd     /etc/motd
-        - crontab ${get_parent:-2.root_remote_dir}/config/crontab/crontab_source.conf
+        - alias .motd.update
+        - alias .crontab.update
+
+    # post_commands:
+    #     - sudo ln -sf ${ln_CONFIG_DIR}/etc_motd     /etc/motd
+    #     - crontab ${get_parent:-2.root_remote_dir}/config/crontab/crontab_source.conf
 
 
 
@@ -60,6 +63,8 @@ ln_to_41:
     root_remote_dir: /home/pi/.ln
     remote_nodes:
         -   lnpi41
+
+
 
 
 ln_to_lndisk:

@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 04-09-2022 19.03.25
+# Date .........: 05-09-2022 15.36.18
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -54,7 +54,7 @@ class LoretoDict(OrderedDict):
     #==========================================================
     # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
     #==========================================================
-    def get_keypath(self, keypath: (str, list), sep: str='.', default={}, exit_on_not_found=True) -> dict:
+    def get_keypath_OK0(self, keypath: (str, list), sep: str='.', default={}, exit_on_not_found=True) -> dict:
         if keypath=='':
             return self
         if isinstance(keypath, str):
@@ -76,35 +76,10 @@ class LoretoDict(OrderedDict):
                 default={}
             return default
 
-    getkp=get_keypath
-
-
     #==========================================================
     # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
     #==========================================================
-    # def update_keypath(self, keypath: (str, list), value, sep: str='.', create=False) -> dict:
-    #     ptr=self.get_keypath(keypath)
-
-    #     if isinstance(keypath, str):
-    #         keypath=keypath.split(sep)
-
-    #     curr_value=ptr[last_key]
-
-    #     if isinstance(curr_value, list):
-    #         if isinstance(value, list)
-    #             ptr[last_key].extend(value)
-
-    #     elif isinstance(curr_value, dict):
-    #         if isinstance(value, dict):
-    #             ptr[last_key].update(value)
-
-
-    #     return ptr
-
-    #==========================================================
-    # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
-    #==========================================================
-    def set_keypath(self, keypath: (str, list), value, sep: str='.', create=False) -> dict:
+    def set_keypath_OK0(self, keypath: (str, list), value, sep: str='.', create=False) -> dict:
         # if not keypath: return
         if isinstance(keypath, str):
             keypath=keypath.split(sep)
@@ -127,7 +102,69 @@ class LoretoDict(OrderedDict):
         ptr[last_key]=value
         return ptr
 
-    setkp=set_keypath
+
+    #==========================================================
+    # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
+    #==========================================================
+    def get_keypath(self, keypath: (str, list), sep: str='.', default=',.-', exit_on_not_found=True) -> dict:
+        if keypath=='':
+            return self
+        if isinstance(keypath, str):
+            keypath=keypath.split(sep)
+
+        ptr=self
+        for key in keypath:
+            if key in ptr:
+                ptr=ptr[key]
+            else:
+                if default==',.-':
+                    logger.error(error)
+                    logger.error(f"key: {key} part of keypath: {keypath} NOT found")
+                    return None
+                else:
+                    return default
+        return ptr
+
+
+
+
+
+
+    #==========================================================
+    # keypath: "key1.key2.key3...." or ["key1", "key2", "key3"]
+    #==========================================================
+    def set_keypath(self, keypath: (str, list), value, sep: str='.', create=False) -> dict:
+        if isinstance(keypath, str):
+            keypath=keypath.split(sep)
+
+        ptr=self
+        last_key=keypath[-1]
+        # Se l'ultimo qualificatore è numerico vuol dire che è una LIST
+        if last_key.isnumeric():
+            index=int(last_key)
+            last_key=keypath[-2]
+        else:
+            index=-1
+
+        for key in keypath[:-1]:
+            if key in ptr:
+                ptr=ptr[key]
+            else:
+                if create:
+                    ptr[key]=OrderedDict()
+                    ptr=ptr[key]
+                else:
+                    logger.error(error)
+                    logger.error("key: %s part of keypath: %s NOT found", key, keypath)
+                    raise
+
+        if index >= 0:
+            ptr[index]=value
+        else:
+            ptr[last_key]=value
+
+        return ptr
+
 
 
     #==========================================================
@@ -183,14 +220,17 @@ class LoretoDict(OrderedDict):
                 for k, v in enumerate(value):
                     items.extend(self.flattenT1a(d={str(k): v}, parent_key=new_key, key_str=key_str, value_str=value_str, explode_list=explode_list).items())
             else:
-                if key_str and isinstance(value, str):
-                    if key_str in new_key:
+                if key_str: # search in key
+                    if isinstance(key, str) and key_str in key:
                         items.append((new_key, value))
-                elif value_str and isinstance(value, str):
-                    if value_str in value:
+
+                elif value_str: # search in value
+                    if isinstance(value, str) and value_str in value:
                         items.append((new_key, value))
-                else:
+
+                else: # insert all
                     items.append((new_key, value))
+
 
         return dict(items)
 

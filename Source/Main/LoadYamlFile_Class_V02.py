@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 04-09-2022 19.18.51
+# Date .........: 05-09-2022 15.12.36
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -197,9 +197,7 @@ class LoadYamlFile_V02(object):
 
 
     # ------------------------------
-    # folders=${get:main.MyData}
-    # folders=/tmp/${get:main.MyData}
-    # folders=/tmp/${get:main.MyData}/file.txt
+    # folders=/tmp/${get_parent:-2.MyData}/file.txt
     # ------------------------------
     def resolve_parent(self, d: dict) -> dict:
         prefix='${get_parent:'
@@ -208,16 +206,16 @@ class LoadYamlFile_V02(object):
         flat_dict=ln_dict.flattenT1a(value_str=prefix, explode_list=True)
         for keypath, value in flat_dict.items():
             if isinstance(value, str):
+                value=os.path.expandvars(value) # resolve env variables
                 while prefix in value:
                     left_data, var_name, rest=self.split_var(value=value, prefix=prefix, suffix="}")
-                    # get parent level...
-                    parent, *_path=var_name.split('.')
+
+                    """get parent level... (first qualifier, negative number)
+                    """
+                    parent, *rel_path=var_name.split('.')
                     token=keypath.split('.')
-                    import pdb; pdb.set_trace(); pass # by Loreto
-                    full_keypath=token[:int(parent)] + _path
-                    var_path='.'.join(full_keypath)
-                    value=d.get_keypath(var_path)
+                    full_keypath=token[:int(parent)] + rel_path
+                    ptr_value=d.get_keypath(full_keypath)
+                    value=left_data + ptr_value + rest
                     d.set_keypath(keypath, value)
-
-
         return ln_dict

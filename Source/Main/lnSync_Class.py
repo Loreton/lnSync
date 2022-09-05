@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 04-09-2022 18.10.55
+# Date .........: 05-09-2022 15.27.16
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -32,7 +32,6 @@ class lnSync_Class():
         self.logger=logger
 
         main_config             = self.load_profiles(filename=main_config_filename)
-        import pdb; pdb.set_trace(); pass # by Loreto
         main_data               = main_config['main']
         self.rclone_config_file = main_data['rclone_config_file']
 
@@ -170,7 +169,8 @@ class lnSync_Class():
             ssh_port=node.get('port')
             ssh_host=node.get('host')
             ssh_user=node.get('user')
-            self.ssh_remote_conn=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}"
+            self.ssh_base=f"-i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}"
+            # self.ssh_alias_base=f"-i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}" # https://www.cyberciti.biz/faq/use-bash-aliases-ssh-based-session/
 
             if self.isRCLONE:
                 remote_path=f"{node_name}:{path}"
@@ -178,7 +178,7 @@ class lnSync_Class():
 
             elif self.isRSYNC:
                 remote_path=f"{ssh_user}@{ssh_host}:{path}"
-                check_cmd=f"{self.ssh_remote_conn} ls -l {path}"
+                check_cmd=f"ssh {self.ssh_base} ls -l {path}"
                 # check_cmd=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host} ls -l {path}"
 
         elif node_type in ['gmail', 'drive']: #---- rclone --config=./rclone.conf -L lsd nloreto:_@NLORETO
@@ -294,10 +294,15 @@ class lnSync_Class():
                 check_remote_dir=False
 
             for command in profile['post_commands']:
-                command=f"{self.ssh_remote_conn} {command}"
+                token=command.split()
+                if token[0] == 'alias':
+                    """ https://www.cyberciti.biz/faq/use-bash-aliases-ssh-based-session/ """
+                    command=command=f"ssh -t {self.ssh_base} /bin/bash -ic {' '.join(token[1:])}"
+                else:
+                    command=f"ssh {self.ssh_base} {command}"
+
                 self.logger.notify(command)
                 if post_commands:
-                    import pdb; pdb.set_trace(); pass # by Loreto
                     run_sh(cmd=command, logger=self.logger, exit_on_error=True)
                 else:
                     self.logger.warning("   enter --post-commands to execute the above commands")
