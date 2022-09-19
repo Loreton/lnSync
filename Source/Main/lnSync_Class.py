@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 05-09-2022 15.58.12
+# Date .........: 18-09-2022 21.49.53
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -291,7 +291,7 @@ class lnSync_Class():
                 self.logger.notify("%s --> %s: [rcode:%s]", local_path, dest, rcode)
                 check_remote_dir=False
 
-            for command in profile['post_commands']:
+            for command in profile.get('post_commands', []):
                 token=command.split()
                 if token[0] == 'alias':
                     """ https://www.cyberciti.biz/faq/use-bash-aliases-ssh-based-session/ """

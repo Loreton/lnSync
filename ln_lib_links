@@ -6,7 +6,7 @@
 # - crea i link logici per alcuni moduli presenti nella LnPyLib
 # --------------------------------------------------------------
 #
-source "${HOME}/.ln/init/Loretorc_Variables" >/dev/null
+source "${HOME}/.ln/init/Main_Variables" >/dev/null
 
 
 function create_module_path_list() {
