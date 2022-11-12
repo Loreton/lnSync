@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 03-09-2022 18.11.24
+# Date .........: 02-11-2022 13.40.36
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -19,9 +19,6 @@ from pathlib import Path
 
 import Source
 from   ColoredLogger import setColors, testLogger
-# import lnSync
-# import lnSync_v2
-# import lnSync_v3_using_Class
 from lnSync_Class import lnSync_Class
 from LnDict import LoretoDict
 
@@ -116,7 +113,7 @@ if __name__ == '__main__':
                             delete_excluded=args.delete_excluded,
                             dry_run=dry_run,
                             prompt=(not args.no_prompt),
-                            post_commands=args.post_commands,
+                            fPostcommands=args.post_commands,
                             )
 
 

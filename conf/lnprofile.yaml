@@ -1,28 +1,19 @@
 
+#-----------------------------------
 ln_base_profile:
-    root_local_dir: ${env:HOME}/.ln
+    root_local_dir: ${env:HOME}
     folders:
-        -   bin
-        -   config
-        -   envars
-        -   init
-        -   LnDoc
-        -   pyDevel
-        -   pyProduction
-        -   pyUtils
-        -   shDevel
-        -   shProduction
-        -   shUtils
-        -   systemd
+        -   .ln
 
     exclude_files:
-        -   'runtime/**'
-        -   '**/runtime/**'
+        -   '____runtime/**'
+        -   '**/____runtime/**'
 
     options: []
     post_commands:
         - alias .motd.update
         - alias .crontab.update
+        - alias .dhcpcd.update
 
     # post_commands:
     #     - sudo ln -sf ${ln_CONFIG_DIR}/etc_motd     /etc/motd
@@ -30,37 +21,44 @@ ln_base_profile:
 
 
 
+#-----------------------------------
 ln_to_22_23_31_41:
-    root_remote_dir: /home/pi/.ln
+    root_remote_dir: /home/pi
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi22
         -   lnpi23
         -   lnpi31
         -   lnpi41
+    post_commands: []
 
 
 ln_to_22:
-    root_remote_dir: /home/pi/.ln
+    root_remote_dir: /home/pi
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi22
+    post_commands:
+        - alias .motd.update
+        - alias .crontab.update
+        - alias .dhcpcd.update
+        - alias .dnsmasqq.update
 
 ln_to_23:
-    root_remote_dir: /home/pi/.ln
+    root_remote_dir: /home/pi
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
         -   lnpi23
 
 ln_to_31:
-    root_remote_dir: /home/pi/.ln
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
+    root_remote_dir: /home/pi
     remote_nodes:
         -   lnpi31
 
 ln_to_41:
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
-    root_remote_dir: /home/pi/.ln
+    root_remote_dir: /home/pi
     remote_nodes:
         -   lnpi41
 
@@ -69,7 +67,7 @@ ln_to_41:
 
 ln_to_lndisk:
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
-    root_remote_dir: /media/loreto/LnDataDisk/Filu/LnDisk/.ln
+    root_remote_dir: /media/loreto/LnDataDisk/Filu/LnDisk
     remote_nodes:
         -   local
     post_commands: [] # non ho postcommands per filesystem to filesystem

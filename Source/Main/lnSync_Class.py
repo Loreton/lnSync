@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 18-09-2022 21.49.53
+# Date .........: 02-11-2022 13.41.55
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -208,16 +208,21 @@ class lnSync_Class():
     #- create eclude_file
     #- build rclone command
     #==============================================================
-    def processProfileV2(self, profile_name: str, delete_excluded: bool=False, dry_run='--dry-run', prompt=False, post_commands=False):
+    def processProfileV2(self, profile_name: str, delete_excluded: bool=False, dry_run='--dry-run', prompt=False, fPostcommands=False):
         # ---- read profile to be processed
         profile=self.load_req_profile(profile_name=profile_name)
 
         if isinstance(profile['remote_nodes'], str): profile['remote_nodes']=profile['remote_nodes'].split()
-        if isinstance(profile['folders'], str): profile['folders']=profile['folders'].split()
+
+        if 'folders' in profile.keys():
+            if isinstance(profile['folders'], str):
+                profile['folders']=profile['folders'].split()
+        else:
+            profile['folders']=[]
 
         stdout_file=f'{self.temp_dir}/lnSync_stdout.log'
         stderr_file=f'{self.temp_dir}/lnSync_stderr.log'
-        delete_excluded='--deleted-excluded' if delete_excluded else ''
+        delete_excluded='--delete-excluded' if delete_excluded else ''
 
         for node_name in profile['remote_nodes']:
             self.logger.notify("going to update node: %s", node_name)
@@ -288,10 +293,16 @@ class lnSync_Class():
                 # -  execute command
                 # ----------------------------------
                 rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=True, stdout_file=stdout_file, stderr_file=stderr_file)
-                self.logger.notify("%s --> %s: [rcode:%s]", local_path, dest, rcode)
+                self.logger.info("%s --> %s: [rcode:%s]", local_path, dest, rcode)
                 check_remote_dir=False
 
-            for command in profile.get('post_commands', []):
+
+            post_commands=profile.get('post_commands', [])
+            if post_commands and not fPostcommands:
+                self.logger.warning("   enter --post-commands to execute the following commands")
+
+            for command in post_commands:
+                fPOST_COMMANDS=False
                 token=command.split()
                 if token[0] == 'alias':
                     """ https://www.cyberciti.biz/faq/use-bash-aliases-ssh-based-session/ """
@@ -300,10 +311,9 @@ class lnSync_Class():
                     command=f"ssh {self.ssh_base} {command}"
 
                 self.logger.notify(command)
-                if post_commands:
+                if fPostcommands:
                     run_sh(cmd=command, logger=self.logger, exit_on_error=True)
-                else:
-                    self.logger.warning("   enter --post-commands to execute the above commands")
+                    fPOST_COMMANDS=True
 
 
 
