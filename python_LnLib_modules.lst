@@ -1,4 +1,4 @@
-"$LNLIB_DIR/Logger/ColoredLogger.py"     =
+"${LNLIB_DIR}/Logger/ColoredLogger_V1.3.py"     ColoredLogger.py
 "$LNLIB_DIR/Utils/fileUtils.py"          =
 "$LNLIB_DIR/Utils/keyboard_prompt.py"    =
 "$LNLIB_DIR/Dictionary/read_ini_file.py" =

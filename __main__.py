@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 02-11-2022 13.40.36
+# Date .........: 22-11-2022 20.26.08
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -18,7 +18,8 @@ from pathlib import Path
 
 
 import Source
-from   ColoredLogger import setColors, testLogger
+# from   ColoredLogger import setColors, testLogger
+from ColoredLogger import setColoredLogger, testLogger
 from lnSync_Class import lnSync_Class
 from LnDict import LoretoDict
 
@@ -85,13 +86,13 @@ def ParseInput():
 #
 #######################################################
 if __name__ == '__main__':
-    # ---- parsing input
     args=ParseInput()
 
-
     # ---- Loggging
-    logger_level=args.logger_console_level.upper()
-    logger=setColors(logger_level, logger_name='lnSync', test=False)
+    logger=setColoredLogger(logger_name='lnSync',
+                            console_logger_level=args.logger_console_level,
+                            threads=False)
+
     args.logger=logger
 
     os.environ['lnSync_RUNTIME_DIR']=os.environ['ln_RUNTIME_DIR'] + '/lnSync'
