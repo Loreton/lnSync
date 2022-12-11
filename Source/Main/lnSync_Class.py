@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 02-11-2022 13.41.55
+# Date .........: 11-12-2022 18.10.21
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -11,7 +11,7 @@ import os
 from subprocessRun import run_sh
 from fileUtils import writeTextFile
 
-from LnDict import LoretoDict
+from LoretoDict import LnDict
 from ColoredLogger import getColors; C=getColors()
 
 
@@ -19,6 +19,7 @@ from subprocessPopen import runCommand
 from LoadYamlFile_Class import LoadYamlFile
 from read_ini_file import readIniFile
 from keyboard_prompt import keyb_prompt
+from envarsYamlLoader import loadYamlFile
 
 
 ########################################################
@@ -26,10 +27,11 @@ from keyboard_prompt import keyb_prompt
 ########################################################
 class lnSync_Class():
 
-    def __init__(self, *, main_config_filename: str, logger, fRCLONE: bool=False, fRSYNC: bool=False):
+    def __init__(self, *, main_config: dict, logger, fRCLONE: bool=False, fRSYNC: bool=False):
         self.logger=logger
 
-        main_config             = self.load_profiles(filename=main_config_filename)
+        # main_config             = self.load_profiles(filename=main_config_filename)
+        import pdb; pdb.set_trace(); pass # by Loreto
         main_data               = main_config['main']
         self.rclone_config_file = main_data['rclone_config_file']
 
@@ -113,7 +115,7 @@ class lnSync_Class():
     # --------------------------------------
     def load_req_profile(self, profile_name):
         if profile_name in self.profiles.keys():
-            profile=LoretoDict(self.profiles[profile_name]) # solo per la scrittura su file
+            profile=LnDict(self.profiles[profile_name]) # solo per la scrittura su file
             profile.toJsonFile(file_out=f"{self.runtime_dir}/json/{profile_name}.json", replace=True)
             profile.toYamlFile(file_out=f"{self.runtime_dir}/yaml/{profile_name}.yaml", replace=True)
         else:

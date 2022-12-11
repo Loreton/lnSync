@@ -4,4 +4,12 @@
 "$LNLIB_DIR/Dictionary/read_ini_file.py" =
 "$LNLIB_DIR/System/subprocessPopen.py"   =
 "$LNLIB_DIR/System/subprocessRun.py"     =
-"$LNLIB_DIR/Dictionary/LnDict.py"        =
+
+
+
+"$LNLIB_DIR/Dictionary/LoretoDict.py"        =
+"$LNLIB_DIR/Dictionary/LoadYamlFile_Class.py"        =
+
+
+### - Yaml
+${LNLIB_DIR}/Yaml/envarsYamlLoader.py               =

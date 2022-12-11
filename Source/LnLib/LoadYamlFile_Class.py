@@ -1,1 +1,1 @@
-/home/loreto/GIT-REPO/Python/LnPyLib/Dictionary/LoadYamlFile_Class.py
+/media/loreto/LnDataDisk/Filu/LnDisk/GIT-REPO/Python/LnPyLib/Dictionary/LoadYamlFile_Class.py

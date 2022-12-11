@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 22-11-2022 20.26.08
+# Date .........: 11-12-2022 18.09.37
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -14,14 +14,14 @@
 import sys; sys.dont_write_bytecode=True
 import os
 from pathlib import Path
-
+from types import SimpleNamespace
 
 
 import Source
-# from   ColoredLogger import setColors, testLogger
 from ColoredLogger import setColoredLogger, testLogger
 from lnSync_Class import lnSync_Class
-from LnDict import LoretoDict
+from LoretoDict import LnDict
+from envarsYamlLoader import loadYamlFile
 
 
 
@@ -101,10 +101,20 @@ if __name__ == '__main__':
 
     logger.info('------- Starting -----------')
 
-    LoretoDict.setLogger(mylogger=logger)
+    gVars=SimpleNamespace()
+    gVars.logger=logger
+
+    import InitializeModules; InitializeModules.Main(gVars=gVars)
 
     # read all configuration data
-    lnSync=lnSync_Class(main_config_filename='conf/main_config.yaml', fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
+    my_config={}
+    for filename in [ "conf/lnprofile.yaml", "conf/lnDisk.yaml" , "conf/myData.yaml" ]:
+        data=loadYamlFile(filename)
+        my_config.update(data)
+
+    my_config=LnDict(my_config)
+
+    lnSync=lnSync_Class(main_config=my_config, fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
     # lnSync=lnSync_Class(main_config_filename='conf/main_config.yaml', ogger=logger)
 
     # rprocess profile
