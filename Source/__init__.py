@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 17-08-2022 16.43.47
+# Date .........: 12-12-2022 15.38.09
 
 
 
@@ -31,11 +31,12 @@ def set_path():
     _my_path.append(prj_dir)
     _my_path.append(f'{prj_dir}/Source')
     _my_path.append(f'{prj_dir}/Source/Main')
+    _my_path.append(f'{prj_dir}/Source/Modules')
     _my_path.append(f'{prj_dir}/Source/LnLib')
-    _my_path.append(f'{prj_dir}/Source/LnLib.zip')
+    # _my_path.append(f'{prj_dir}/Source/LnLib.zip')
 
     for path in _my_path:
-        # print(str(path))
+        # print(path)
         sys.path.insert(0, str(path))
 
 if not _my_path: set_path()

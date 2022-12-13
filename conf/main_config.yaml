@@ -1,13 +1,13 @@
 main:
-    runtime_dir: ${env:ln_RUNTIME_DIR}/lnSync
-    dry-run: ${env:lnSync_DRY_RUN}
+    runtime_dir: ${ln_RUNTIME_DIR}/lnSync
+    dry-run: ${lnSync_DRY_RUN}
     temp_dir: /tmp/lnSync
-    rclone_config_file: ${env:HOME}/.ln/bin/rclone/rclone.conf # /home/loreto/.ln/bin/rclone/rclone.conf
+    rclone_config_file: ${HOME}/.ln/bin/rclone/rclone.conf # /home/loreto/.ln/bin/rclone/rclone.conf
 
 # rclone ed rsync devono avere le stesse entrate anche se vuote....
 rclone:
     # https://rclone.org/local/#skip-links
-    bin: ${env:HOME}/.ln/bin/rclone/rclone
+    bin: ${HOME}/.ln/bin/rclone/rclone
     temp_dir: /tmp/rclone
     options:
         -   "sync"

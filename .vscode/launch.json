@@ -17,6 +17,9 @@
             "args":[
                 "--profile=ln_to_lndisk",
                 "--rsync",
+                "--console-logger-level=info",
+                "--file-logger-level=warning",
+                "--logging-dir=/tmp/lnsync",
             ]
         }
     ]

@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 11-12-2022 18.10.21
+# Date .........: 12-12-2022 15.34.02
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -19,7 +19,7 @@ from subprocessPopen import runCommand
 from LoadYamlFile_Class import LoadYamlFile
 from read_ini_file import readIniFile
 from keyboard_prompt import keyb_prompt
-from envarsYamlLoader import loadYamlFile
+# from envarsYamlLoader import loadYamlFile
 
 
 ########################################################
@@ -31,7 +31,7 @@ class lnSync_Class():
         self.logger=logger
 
         # main_config             = self.load_profiles(filename=main_config_filename)
-        import pdb; pdb.set_trace(); pass # by Loreto
+
         main_data               = main_config['main']
         self.rclone_config_file = main_data['rclone_config_file']
 
@@ -69,11 +69,11 @@ class lnSync_Class():
         self.setExcludeFiles(excl=main_config['common_exclude_files'])
 
 
-
+    '''
     # --------------------------------------
     # ----- reading profiles configuration
     # --------------------------------------
-    def load_profiles(self, filename):
+    def load_profiles__(self, filename):
         self.logger.info('reading file: %s', filename)
 
         YamlData=LoadYamlFile(filename=filename, logger=self.logger)
@@ -89,6 +89,7 @@ class lnSync_Class():
         config.toJsonFile(file_out=f"{self.runtime_dir}/json/main_config.json", replace=True)
         # ---------- save configuration file for debugging
         return config
+    '''
 
 
 
@@ -210,9 +211,13 @@ class lnSync_Class():
     #- create eclude_file
     #- build rclone command
     #==============================================================
-    def processProfileV2(self, profile_name: str, delete_excluded: bool=False, dry_run='--dry-run', prompt=False, fPostcommands=False):
+    # def processProfile(self, profile_name: str, delete_excluded: bool=False, dry_run='--dry-run', prompt=False, fPostcommands=False):
+    def processProfile(self, gVars):
+        global gv
+        gv=gVars
+
         # ---- read profile to be processed
-        profile=self.load_req_profile(profile_name=profile_name)
+        profile=self.load_req_profile(profile_name=gv.profile_name)
 
         if isinstance(profile['remote_nodes'], str): profile['remote_nodes']=profile['remote_nodes'].split()
 
@@ -224,7 +229,7 @@ class lnSync_Class():
 
         stdout_file=f'{self.temp_dir}/lnSync_stdout.log'
         stderr_file=f'{self.temp_dir}/lnSync_stderr.log'
-        delete_excluded='--delete-excluded' if delete_excluded else ''
+        delete_excluded='--delete-excluded' if gv.delete_excluded else ''
 
         for node_name in profile['remote_nodes']:
             self.logger.notify("going to update node: %s", node_name)
@@ -263,7 +268,7 @@ class lnSync_Class():
                             f"--log-file {self.temp_dir}/{folder}.log", # se lo metto perdo l'outpus su console
                             delete_excluded,
                             options,
-                            dry_run,
+                            gv.dry_run,
                             local_path ,
                             dest,
                         ]
@@ -274,7 +279,7 @@ class lnSync_Class():
                 # -  comando colorato per la console
                 # ----------------------------------
                 colored_data=[
-                            C.redH    + dry_run    + C.colorReset,
+                            C.redH    + gv.dry_run    + C.colorReset,
                             C.greenH  + local_path + C.colorReset,
                             C.yellowH + dest       + C.colorReset,
                         ]
@@ -288,7 +293,7 @@ class lnSync_Class():
                 # -  convert command to string
                 # ----------------------------------
 
-                if prompt:
+                if gv.prompt:
                     keyb_prompt(msg='', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
 
                 # ----------------------------------
@@ -300,7 +305,7 @@ class lnSync_Class():
 
 
             post_commands=profile.get('post_commands', [])
-            if post_commands and not fPostcommands:
+            if post_commands and not gv.fPostcommands:
                 self.logger.warning("   enter --post-commands to execute the following commands")
 
             for command in post_commands:
@@ -313,7 +318,7 @@ class lnSync_Class():
                     command=f"ssh {self.ssh_base} {command}"
 
                 self.logger.notify(command)
-                if fPostcommands:
+                if gv.fPostcommands:
                     run_sh(cmd=command, logger=self.logger, exit_on_error=True)
                     fPOST_COMMANDS=True
 

@@ -1,6 +1,6 @@
 #
 # updated by ...: Loreto Notarantonio
-# Date .........: 28-08-2022 09.04.28
+# Date .........: 12-12-2022 18.25.30
 #
 
 #########################################################
@@ -32,7 +32,7 @@ LnDisk_to_gmail:
 LnDisk_to_lnpi31:
     root_local_dir: /media/loreto/LnDataDisk/Filu/LnDisk
     root_remote_dir: /mnt/Toshiba_1TB_LnDisk/Filu/LnDisk
-    folders: ${get:local_vars.LnDisk_partial} Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
+    folders: ${get:local_vars.LnDisk_partial}  Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
     remote_nodes: lnpi31
 
 

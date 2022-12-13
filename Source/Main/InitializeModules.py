@@ -10,6 +10,12 @@ def setup_LoretoDict(*, gVars):
 
     from LoretoDict import setup; setup(gVars=gv)
 
+def setup_Benedict(*, gVars):
+    gv=SimpleNamespace()
+    gv.logger=gVars.logger
+
+    import benedictMonkey; benedictMonkey.setup(gVars=gv)
+
 
 
 def setup_envarsYamlLoader(*, gVars):
@@ -23,3 +29,4 @@ def setup_envarsYamlLoader(*, gVars):
 
 def Main(*, gVars):
     setup_LoretoDict(gVars=gVars)
+    setup_Benedict(gVars=gVars)

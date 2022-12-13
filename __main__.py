@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 11-12-2022 18.09.37
+# Date .........: 13-12-2022 17.28.44
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -21,110 +21,62 @@ import Source
 from ColoredLogger import setColoredLogger, testLogger
 from lnSync_Class import lnSync_Class
 from LoretoDict import LnDict
-from envarsYamlLoader import loadYamlFile
+from LoadYamlFile_Class import LoadYamlFile
+# from envarsYamlLoader import loadYamlFile
+from ParseInput import ParseInput
 
 
-
-
-
-##############################################################
-# - Parse Input
-##############################################################
-def ParseInput():
-    # -----------------------------
-    def check_dir(path):
-        p = Path(path).resolve()
-        if p.is_dir():
-            return str(p)
-        else:
-            p.mkdir(parents=True, exist_ok=True)
-            return str(p)
-
-
-    import argparse
-    if len(sys.argv) == 1:
-        sys.argv.append('-h')
-
-    parser = argparse.ArgumentParser(description='rclone + rsync')
-
-    parser.add_argument('--profile', help='specify profile to be processed', required=True, default=None)
-    parser.add_argument('--go', help='specify if command must be executed. (dry-run is default)', action='store_true')
-    parser.add_argument('--verbose', help='Display all messages', action='store_true')
-
-
-        # logging and debug options
-    parser.add_argument('--display-args', help='Display input paramenters', action='store_true')
-    parser.add_argument('--logger-console-level', required=False,
-            choices=['critical', 'info', 'function', 'warning', 'error', 'debug', 'trace'], default='info',
-            help='console logger level - default: error')
-
-    parser.add_argument('--delete-excluded', help='detele excluded files', action='store_true')
-    parser.add_argument('--runtime-dir', required=False, type=check_dir, default=None, help='etc directory')
-    parser.add_argument('--no-prompt', required=False, action='store_true', help='use rsync so sync')
-    parser.add_argument('--post-commands', required=False, action='store_true', help='execute remote post commands')
-
-    rclone_rsync=parser.add_mutually_exclusive_group(required=True)
-    rclone_rsync.add_argument('--rclone', action='store_true', help='use rclone so sync')
-    rclone_rsync.add_argument('--rsync', action='store_true', help='use rsync so sync')
-
-
-    args = parser.parse_args()
-
-
-    if args.display_args:
-        import json
-        json_data = json.dumps(vars(args), indent=4, sort_keys=True)
-        print('input arguments: {json_data}'.format(**locals()))
-        sys.exit(0)
-
-    return  args
-
-
+__ln_version__="lnSync V2022-12-13_172844"
 
 
 #######################################################
 #
 #######################################################
 if __name__ == '__main__':
-    args=ParseInput()
+    args=ParseInput(version=__ln_version__)
+    prj_name='lnSync'
+    logger=setColoredLogger(logger_name=prj_name,
+                            console_logger_level=args.console_logger_level,
+                            file_logger_level=args.file_logger_level,
+                            logging_dir=args.logging_dir,  # logging file--> logging_dir + logger_name
+                            threads=False,
+                            create_logging_dir=True)
 
-    # ---- Loggging
-    logger=setColoredLogger(logger_name='lnSync',
-                            console_logger_level=args.logger_console_level,
-                            threads=False)
-
-    args.logger=logger
+    testLogger(logger)
+    # args.logger=logger
 
     os.environ['lnSync_RUNTIME_DIR']=os.environ['ln_RUNTIME_DIR'] + '/lnSync'
-    os.environ['lnSync_DRY_RUN']='' if args.go else '--dry-run'
+    # os.environ['lnSync_DRY_RUN']='' if args.go else '--dry-run'
 
 
     logger.info('------- Starting -----------')
 
     gVars=SimpleNamespace()
-    gVars.logger=logger
+    gVars.logger          = logger
+    gVars.runtime_dir     = f'{os.environ["ln_RUNTIME_DIR"]}/lnSync'
+    gVars.dry_run         = '' if args.go else '--dry-run'
+    gVars.profile_name    = args.profile
+    gVars.delete_excluded = args.delete_excluded
+    gVars.prompt          = (not args.no_prompt)
+    gVars.fPostcommands   = args.post_commands
+
 
     import InitializeModules; InitializeModules.Main(gVars=gVars)
 
     # read all configuration data
-    my_config={}
-    for filename in [ "conf/lnprofile.yaml", "conf/lnDisk.yaml" , "conf/myData.yaml" ]:
-        data=loadYamlFile(filename)
-        my_config.update(data)
+    myYaml=LoadYamlFile(filename='main_config.yaml', search_paths=['conf'], logger=logger)
+    my_config=myYaml.get_data(cast='benedict') # converte anche il dict in benedict
 
-    my_config=LnDict(my_config)
+    my_config.to_yaml(filepath='/tmp/prova.yaml', indent=4, sort_keys=False)
 
-    lnSync=lnSync_Class(main_config=my_config, fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
-    # lnSync=lnSync_Class(main_config_filename='conf/main_config.yaml', ogger=logger)
+    # lnSync=lnSync_Class(main_config=my_config, fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
 
-    # rprocess profile
-    dry_run='' if args.go else '--dry-run'
+    # lnSync.processProfile(gVars=gVars)
 
-    lnSync.processProfileV2(profile_name=args.profile,
-                            delete_excluded=args.delete_excluded,
-                            dry_run=dry_run,
-                            prompt=(not args.no_prompt),
-                            fPostcommands=args.post_commands,
-                            )
+    # lnSync.processProfileV2(profile_name=args.profile,
+    #                         delete_excluded=args.delete_excluded,
+    #                         prompt=(not args.no_prompt),
+    #                         fPostcommands=args.post_commands,
+    #                         )
 
 

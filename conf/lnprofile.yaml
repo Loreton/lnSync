@@ -1,7 +1,7 @@
 
 #-----------------------------------
 ln_base_profile:
-    root_local_dir: ${env:HOME}
+    root_local_dir: ${HOME}
     folders:
         -   .ln
 
@@ -14,6 +14,11 @@ ln_base_profile:
         - alias .motd.update
         - alias .crontab.update
         - alias .dhcpcd.update
+
+    test_override:
+        - riga_base_1
+        - riga_base_2
+        - riga_base_3
 
     # post_commands:
     #     - sudo ln -sf ${ln_CONFIG_DIR}/etc_motd     /etc/motd
@@ -31,6 +36,10 @@ ln_to_22_23_31_41:
         -   lnpi31
         -   lnpi41
     post_commands: []
+    test_override:
+        - riga_orig_1
+        - riga_orig_2
+        - riga_orig_3
 
 
 ln_to_22:

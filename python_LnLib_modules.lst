@@ -9,6 +9,7 @@
 
 "$LNLIB_DIR/Dictionary/LoretoDict.py"        =
 "$LNLIB_DIR/Dictionary/LoadYamlFile_Class.py"        =
+"$LNLIB_DIR/Dictionary/benedictMonkey.py"        =
 
 
 ### - Yaml
