@@ -3,22 +3,21 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 12-12-2022 15.34.02
+# Date .........: 16-12-2022 08.15.25
 
 import sys; sys.dont_write_bytecode=True
 import os
 
 from subprocessRun import run_sh
-from fileUtils import writeTextFile
+import LnUtils
 
-from LoretoDict import LnDict
 from ColoredLogger import getColors; C=getColors()
 
 
 from subprocessPopen import runCommand
-from LoadYamlFile_Class import LoadYamlFile
+# from LoadYamlFile_Class import LoadYamlFile_Class
 from read_ini_file import readIniFile
-from keyboard_prompt import keyb_prompt
+# from keyboard_prompt import keyb_prompt
 # from envarsYamlLoader import loadYamlFile
 
 
@@ -36,7 +35,7 @@ class lnSync_Class():
         self.rclone_config_file = main_data['rclone_config_file']
 
         self.runtime_dir        = main_data['runtime_dir']
-        self.dry_run            = main_data['dry-run']
+        # self.dry_run            = main_data['dry-run']
         self.rclone_conf        = readIniFile(filename=self.rclone_config_file)
 
         self.profiles           = main_config['profiles']
@@ -69,28 +68,6 @@ class lnSync_Class():
         self.setExcludeFiles(excl=main_config['common_exclude_files'])
 
 
-    '''
-    # --------------------------------------
-    # ----- reading profiles configuration
-    # --------------------------------------
-    def load_profiles__(self, filename):
-        self.logger.info('reading file: %s', filename)
-
-        YamlData=LoadYamlFile(filename=filename, logger=self.logger)
-        config=YamlData.config()
-        self.runtime_dir=config.get_keypath('main.runtime_dir')
-        self.temp_dir=config.get_keypath('main.temp_dir')
-        if not os.path.exists(self.temp_dir):
-                os.mkdir(self.temp_dir)
-
-
-        # ---------- save configuration file for debugging
-        config.toYamlFile(file_out=f"{self.runtime_dir}/yaml/main_config.yaml", replace=True)
-        config.toJsonFile(file_out=f"{self.runtime_dir}/json/main_config.json", replace=True)
-        # ---------- save configuration file for debugging
-        return config
-    '''
-
 
 
     # --------------------------------------
@@ -115,10 +92,11 @@ class lnSync_Class():
     #           - ''
     # --------------------------------------
     def load_req_profile(self, profile_name):
+        ### formato benedict
         if profile_name in self.profiles.keys():
-            profile=LnDict(self.profiles[profile_name]) # solo per la scrittura su file
-            profile.toJsonFile(file_out=f"{self.runtime_dir}/json/{profile_name}.json", replace=True)
-            profile.toYamlFile(file_out=f"{self.runtime_dir}/yaml/{profile_name}.yaml", replace=True)
+            profile=self.profiles[profile_name] # scrittura su file
+            profile.to_json(filepath=f"{self.runtime_dir}/json/{profile_name}.json")
+            profile.to_yaml(filepath=f"{self.runtime_dir}/yaml/{profile_name}.yaml")
         else:
             self.logger.error('Profile %s not found', profile_name)
             self.logger.notify('     Please enter one of the following profile name:')
@@ -135,7 +113,7 @@ class lnSync_Class():
         self.exclude_files = list(dict.fromkeys(self.exclude_files))
 
         temp_fname=f'{self.temp_dir}/exclude_files.txt'
-        writeTextFile(data=self.exclude_files, file_out=temp_fname, replace=True, logger=self.logger)
+        LnUtils.writeTextFile(data=self.exclude_files, filename=temp_fname, replace=True)
         return temp_fname
 
 
@@ -160,16 +138,15 @@ class lnSync_Class():
         node=self.rclone_conf.get(node_name, {})
         node_type=node.get('type')
 
-
         if node_name=='local': #---- rclone --config ./rclone.conf -L lsd /home/loreto
             remote_path=path
             check_cmd=f"ls -l {remote_path}"
 
         elif node_type=='sftp': #---- rclone --config=./rclone.conf -L lsd lnpi31:/mnt/Toshiba_1TB_LnDisk/Filu
-            ssh_key=node.get('key_file')
-            ssh_port=node.get('port')
-            ssh_host=node.get('host')
-            ssh_user=node.get('user')
+            ssh_key=node['key_file']
+            ssh_port=node['port']
+            ssh_host=node['host']
+            ssh_user=node['user']
             self.ssh_base=f"-i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}"
             # self.ssh_alias_base=f"-i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}" # https://www.cyberciti.biz/faq/use-bash-aliases-ssh-based-session/
 
@@ -294,11 +271,14 @@ class lnSync_Class():
                 # ----------------------------------
 
                 if gv.prompt:
-                    keyb_prompt(msg='', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
-
+                    choice=LnUtils.keyb_prompt(msg='[R]un [any]Skip', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
+                    if not choice=='r': continue
                 # ----------------------------------
                 # -  execute command
                 # ----------------------------------
+                # os.remove(stdout_file)
+                # os.remove(stderr_file)
+                # import pdb; pdb.set_trace(); pass # by Loreto
                 rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=True, stdout_file=stdout_file, stderr_file=stderr_file)
                 self.logger.info("%s --> %s: [rcode:%s]", local_path, dest, rcode)
                 check_remote_dir=False

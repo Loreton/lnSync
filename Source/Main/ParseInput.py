@@ -57,7 +57,7 @@ def ParseInput(version):
         _parser.add_argument('--systemd', action='store_true', help='''It's a systemd process\n\n''' )
         _parser.add_argument('--pid-file', type=str, required=False, default='/tmp/mqttmonitor/mqttmonitor.pid', help='''pid file\n\n''' )
 
-        _parser.add_argument('--go', help='specify if command must be executed. (dry-run is default)', action='store_true')
+        _parser.add_argument('--run', help='specify if command must be executed. (--dry-run is default)', action='store_true')
         _parser.add_argument('--verbose', help='Display all messages', action='store_true')
 
         _parser.add_argument( "--console-logger-level",
