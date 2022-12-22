@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 16-12-2022 08.00.54
+# Date .........: 21-12-2022 18.17.35
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -24,7 +24,7 @@ from LoadYamlFile_Class import LoadYamlFile_Class
 from ParseInput import ParseInput
 
 
-__ln_version__="lnSync V2022-12-16_080054"
+__ln_version__="lnSync V2022-12-21_181735"
 
 
 #######################################################
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     testLogger(logger)
 
     os.environ['lnSync_RUNTIME_DIR']=os.environ['ln_RUNTIME_DIR'] + '/lnSync'
-    os.environ['lnSync_DRY_RUN']='' if args.run else '--dry-run'
+    os.environ['lnSync_DRY_RUN']='' if args.go else '--dry-run'
 
 
 
@@ -52,9 +52,10 @@ if __name__ == '__main__':
     gVars=SimpleNamespace()
     gVars.logger          = logger
     gVars.runtime_dir     = f'{os.environ["ln_RUNTIME_DIR"]}/lnSync'
-    gVars.dry_run         = '' if args.run else '--dry-run'
+    gVars.dry_run         = '' if args.go else '--dry-run'
     gVars.profile_name    = args.profile
     gVars.delete_excluded = args.delete_excluded
+    gVars.mirror          = args.mirror
     gVars.prompt          = (not args.no_prompt)
     gVars.fPostcommands   = args.post_commands
 
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     lnSync=lnSync_Class(main_config=my_config, fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
 
     lnSync.processProfile(gVars=gVars)
-    if not args.run:
+    if not args.go:
         print()
         logger.notify('Process run in --dry-run mode. enter: --run to execute!')
         logger.notify('Process run in --dry-run mode. enter: --run to execute!')

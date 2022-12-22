@@ -57,7 +57,7 @@ def ParseInput(version):
         _parser.add_argument('--systemd', action='store_true', help='''It's a systemd process\n\n''' )
         _parser.add_argument('--pid-file', type=str, required=False, default='/tmp/mqttmonitor/mqttmonitor.pid', help='''pid file\n\n''' )
 
-        _parser.add_argument('--run', help='specify if command must be executed. (--dry-run is default)', action='store_true')
+        _parser.add_argument('--go', help='specify if command must be executed. (--dry-run is default)', action='store_true')
         _parser.add_argument('--verbose', help='Display all messages', action='store_true')
 
         _parser.add_argument( "--console-logger-level",
@@ -111,7 +111,8 @@ def ParseInput(version):
 
     parser.add_argument('--profile', help='specify profile to be processed', required=True, default=None)
 
-    parser.add_argument('--delete-excluded', help='detele excluded files', action='store_true')
+    parser.add_argument('--delete-excluded', help='deteles excluded files', action='store_true')
+    parser.add_argument('--mirror', help='deletes any files that exist in your target directories but that do not exist in the source directory', action='store_true')
     parser.add_argument('--runtime-dir', required=False, type=check_dir, default=None, help='etc directory')
     parser.add_argument('--no-prompt', required=False, action='store_true', help='use rsync so sync')
     parser.add_argument('--post-commands', required=False, action='store_true', help='execute remote post commands')

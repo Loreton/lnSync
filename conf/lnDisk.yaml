@@ -1,6 +1,6 @@
 #
 # updated by ...: Loreto Notarantonio
-# Date .........: 16-12-2022 08.18.14
+# Date .........: 21-12-2022 18.08.58
 #
 
 #########################################################
@@ -33,7 +33,7 @@ LnDisk_to_lnpi31:
     root_local_dir: /media/loreto/LnDataDisk/Filu/LnDisk
     root_remote_dir: /mnt/Toshiba_1TB_LnDisk/Filu/LnDisk
     folders: ${get:local_vars.LnDisk_partial}  Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
-    remote_nodes: lnpi31
+    remote_nodes: lnpi31_rem
 
 
 LnDisk_to_lnpi41:
@@ -52,7 +52,7 @@ LnDisk_to_bkup2-500GB:
 
 LnDisk_to_LN1TB_A:
     root_local_dir: /media/loreto/LnDataDisk/Filu
-    root_remote_dir: /media/loreto/LN1TB_A/Filu
+    root_remote_dir: /media/loreto/Ln1TB_A/Filu
     folders: DiskBackup MyData LnDisk
     remote_nodes: local
 

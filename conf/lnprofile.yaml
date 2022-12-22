@@ -43,7 +43,7 @@ ln_to_22:
     root_remote_dir: /home/pi
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
-        -   lnpi22
+        -   lnpi22_rem
     post_commands:
         - alias .motd.update
         - alias .crontab.update
@@ -54,21 +54,19 @@ ln_to_23:
     root_remote_dir: /home/pi
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     remote_nodes:
-        -   lnpi23
+        -   lnpi23_rem
 
 ln_to_31:
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     root_remote_dir: /home/pi
     remote_nodes:
-        -   lnpi31
+        -   lnpi31_rem
 
 ln_to_41:
     _!_include_and_remove_this_key: "${get_dict:ln_base_profile}"
     root_remote_dir: /home/pi
     remote_nodes:
         -   lnpi41
-
-
 
 
 ln_to_lndisk:

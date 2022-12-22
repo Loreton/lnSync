@@ -20,8 +20,8 @@ rclone:
 rsync:
     bin: /usr/bin/rsync
     temp_dir: /tmp/rsync
+        # - "-e 'ssh -i /home/loreto/.ssh/Ln_ed25519'"
     options:
-        - "-e 'ssh -i /home/loreto/.ssh/Ln_ed25519'"
         - "--recursive"
         - "--links"
         - "--perms"

@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 16-12-2022 08.15.25
+# Date .........: 21-12-2022 21.22.51
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -118,7 +118,11 @@ class lnSync_Class():
 
 
     def setOptions(self, options: list=[]):
-        self.pgm_options.extend(options)
+        if isinstance(options, list):
+            self.pgm_options.extend(options)
+        else:
+            self.pgm_options.append(options)
+        # print(self.pgm_options)
         return ' '.join(self.pgm_options)
 
 
@@ -148,7 +152,6 @@ class lnSync_Class():
             ssh_host=node['host']
             ssh_user=node['user']
             self.ssh_base=f"-i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}"
-            # self.ssh_alias_base=f"-i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host}" # https://www.cyberciti.biz/faq/use-bash-aliases-ssh-based-session/
 
             if self.isRCLONE:
                 remote_path=f"{node_name}:{path}"
@@ -157,7 +160,7 @@ class lnSync_Class():
             elif self.isRSYNC:
                 remote_path=f"{ssh_user}@{ssh_host}:{path}"
                 check_cmd=f"ssh {self.ssh_base} ls -l {path}"
-                # check_cmd=f"ssh -i {ssh_key} -p {ssh_port} {ssh_user}@{ssh_host} ls -l {path}"
+                self.setOptions([ "--compress", f"-e 'ssh -i {ssh_key} -p {ssh_port}'"]) # -z Turns on compression during the transfer
 
         elif node_type in ['gmail', 'drive']: #---- rclone --config=./rclone.conf -L lsd nloreto:_@NLORETO
 
@@ -233,16 +236,22 @@ class lnSync_Class():
                 # ---- check remote path directory
                 remote_path=self.resolveRemoteDir(node_name=node_name, path=root_remote_path, check_it=check_remote_dir, exit_on_error=True)
                 dest=f"{remote_path}/{folder}/"
+                if gv.mirror:
+                    options=self.setOptions(['--delete'])
+                else:
+                    options=self.setOptions()
+                            # ' '.join(self.pgm_options),
 
                 # -----------------------------
                 # ---- prepare command
                 # -----------------------------
                 configuration_file=f"--config={self.rclone_config_file}" if self.isRCLONE else ''
 
+                log_filename=f"{self.temp_dir}/{folder}.log"
                 baseCMD=[self.pgm_bin,
                             configuration_file,
                             f"--exclude-from {exclude_filename}",
-                            f"--log-file {self.temp_dir}/{folder}.log", # se lo metto perdo l'outpus su console
+                            f"--log-file {log_filename}", # se lo metto perdo l'output su console
                             delete_excluded,
                             options,
                             gv.dry_run,
@@ -256,7 +265,7 @@ class lnSync_Class():
                 # -  comando colorato per la console
                 # ----------------------------------
                 colored_data=[
-                            C.redH    + gv.dry_run    + C.colorReset,
+                            C.redH    + gv.dry_run + C.colorReset,
                             C.greenH  + local_path + C.colorReset,
                             C.yellowH + dest       + C.colorReset,
                         ]
@@ -276,10 +285,15 @@ class lnSync_Class():
                 # ----------------------------------
                 # -  execute command
                 # ----------------------------------
-                # os.remove(stdout_file)
                 # os.remove(stderr_file)
                 # import pdb; pdb.set_trace(); pass # by Loreto
-                rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=True, stdout_file=stdout_file, stderr_file=stderr_file)
+                os.remove(log_filename)
+                rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=False, stdout_file=stdout_file, stderr_file=stderr_file)
+                with open(log_filename, 'r', encoding='utf-8') as f:
+                    content=f.read() # return all file as string
+                for line in content.split('\n'):
+                    print(line[27:])
+
                 self.logger.info("%s --> %s: [rcode:%s]", local_path, dest, rcode)
                 check_remote_dir=False
 
