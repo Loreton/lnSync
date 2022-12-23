@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 21-12-2022 21.22.51
+# Date .........: 23-12-2022 17.10.44
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -287,12 +287,13 @@ class lnSync_Class():
                 # ----------------------------------
                 # os.remove(stderr_file)
                 # import pdb; pdb.set_trace(); pass # by Loreto
-                os.remove(log_filename)
+                if os.path.exists(log_filename):
+                    os.remove(log_filename)
                 rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=False, stdout_file=stdout_file, stderr_file=stderr_file)
                 with open(log_filename, 'r', encoding='utf-8') as f:
                     content=f.read() # return all file as string
                 for line in content.split('\n'):
-                    print(line[27:])
+                    print(line[28:])
 
                 self.logger.info("%s --> %s: [rcode:%s]", local_path, dest, rcode)
                 check_remote_dir=False
