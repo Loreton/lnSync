@@ -114,6 +114,7 @@ def ParseInput(version):
     parser.add_argument('--delete-excluded', help='deteles excluded files', action='store_true')
     parser.add_argument('--mirror', help='deletes any files that exist in your target directories but that do not exist in the source directory', action='store_true')
     parser.add_argument('--runtime-dir', required=False, type=check_dir, default=None, help='etc directory')
+    parser.add_argument('--config-file', required=True, type=check_file, default=None, help='configuration file')
     parser.add_argument('--no-prompt', required=False, action='store_true', help='use rsync so sync')
     parser.add_argument('--post-commands', required=False, action='store_true', help='execute remote post commands')
 

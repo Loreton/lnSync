@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 21-12-2022 18.17.35
+# Date .........: 29-12-2022 08.33.31
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -24,7 +24,7 @@ from LoadYamlFile_Class import LoadYamlFile_Class
 from ParseInput import ParseInput
 
 
-__ln_version__="lnSync V2022-12-21_181735"
+__ln_version__="lnSync V2022-12-29_083331"
 
 
 #######################################################
@@ -63,7 +63,8 @@ if __name__ == '__main__':
     import InitializeModules; InitializeModules.Main(gVars=gVars)
 
     # read all configuration data
-    myYaml=LoadYamlFile_Class(filename='main_config.yaml', search_paths=['conf'], resolve_include=True, resolve_vars=True)
+    # myYaml=LoadYamlFile_Class(filename='main_config.yaml', search_paths=['conf'], resolve_include=True, resolve_vars=True)
+    myYaml=LoadYamlFile_Class(filename=args.config_file, search_paths=[], resolve_include=True, resolve_vars=True)
     my_config=myYaml.get_dict() # converte anche il dict in benedict
 
     my_config.to_yaml(filepath='/tmp/prova.yaml', indent=4, sort_keys=False)

@@ -1,0 +1,22 @@
+#
+# updated by ...: Loreto Notarantonio
+# Date .........: 28-12-2022 19.43.22
+#
+
+#########################################################
+# -             P R O F I L E S
+#########################################################
+
+
+local_vars:
+    LnDisk_partial: Loreto Lesla Technical-DOC LnStart Antonietta Rinaldo
+    LnDisk_Full: ${get:local_vars.LnDisk_partial} Ln-eBooks LnPi LnFree LnSite PortableApps GIT-REPO
+
+
+Laura_to_31:
+    root_local_dir: /home/laura/laura_disk
+    root_remote_dir: /home/laura/laura_disk
+    folders: LauraDOC OtherPhotos Photos
+    remote_nodes: lnpi31_rem
+
+

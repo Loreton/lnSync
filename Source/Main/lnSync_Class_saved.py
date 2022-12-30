@@ -3,12 +3,12 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 30-12-2022 21.09.09
+# Date .........: 29-12-2022 08.56.42
 
 import sys; sys.dont_write_bytecode=True
 import os
 import glob
-from types import SimpleNamespace
+
 from subprocessRun import run_sh
 import LnUtils
 
@@ -47,13 +47,11 @@ class lnSync_Class():
 
         if self.isRCLONE:
             _config=main_config['rclone']
-            self.main_options=main_config['rclone.options']
             self.rclone_bin=_config['bin']
             self.pgm_bin=self.rclone_bin
 
         elif self.isRSYNC:
             _config=main_config['rsync']
-            self.main_options=main_config['rsync.options']
             self.rsync_bin=_config['bin']
             self.pgm_bin=self.rsync_bin
 
@@ -67,7 +65,7 @@ class lnSync_Class():
 
         self.pgm_options=[]
         self.exclude_files=[]
-        # self.setOptions(options=_config['options'])
+        self.setOptions(options=_config['options'])
         self.setExcludeFiles(excl=main_config['common_exclude_files'])
 
 
@@ -122,7 +120,7 @@ class lnSync_Class():
         return temp_fname
 
 
-    def setOptions_XXXX(self, options: list=[]):
+    def setOptions(self, options: list=[]):
         if isinstance(options, list):
             self.pgm_options.extend(options)
         else:
@@ -142,10 +140,7 @@ class lnSync_Class():
         else:
             return None
 
-    # def resolveRemoteDir(self, node_name: str, path: str, check_it: bool=False, exit_on_error=False):
-    def resolveRemoteDir(self, profile: dict, node_name: str, check_it: bool=False, exit_on_error=False):
-        # path=profile['remote_path']
-        path=profile["remote_root_dir"]
+    def resolveRemoteDir(self, node_name: str, path: str, check_it: bool=False, exit_on_error=False):
         if path is None: path=''
         node=self.rclone_conf.get(node_name, {})
         node_type=node.get('type')
@@ -168,8 +163,7 @@ class lnSync_Class():
             elif self.isRSYNC:
                 remote_path=f"{ssh_user}@{ssh_host}:{path}"
                 check_cmd=f"ssh {self.ssh_base} ls -l {path}"
-                profile["options"].append("--compress")
-                profile["options"].append(f"-e 'ssh -i {ssh_key} -p {ssh_port}'")
+                self.setOptions([ "--compress", f"-e 'ssh -i {ssh_key} -p {ssh_port}'"]) # -z Turns on compression during the transfer
 
         elif node_type in ['gmail', 'drive']: #---- rclone --config=./rclone.conf -L lsd nloreto:_@NLORETO
 
@@ -200,112 +194,12 @@ class lnSync_Class():
     #- create eclude_file
     #- build rclone command
     #==============================================================
-    def processFolder(self, folder_name, local_path, dest_path, profile):
-        # v=prfVars
-
-        ### add project exclude file to exclude base list
-        exclude_filename=self.setExcludeFiles(profile.get("exclude_files", []))
-
-        ### add project options to common options list
-        # options=self.setOptions(options=profile.get("options", []))
-        if gv.mirror:
-            options.extend(['--delete-after'])
-
-        if 'big_files_or_remote_xfer' in profile and profile['big_files_or_remote_xfer']:
-            options.extend(self.config['rsync.big_files_or_remote_options'])
-
-
-
-        stdout_file=f'{self.temp_dir}/lnSync_stdout.log'
-        stderr_file=f'{self.temp_dir}/lnSync_stderr.log'
-        delete_excluded='--delete-excluded' if gv.delete_excluded else ''
-        dq='"'
-        ### -----------------------------
-        ### ---- prepare command
-        ### -----------------------------
-        configuration_file=f"--config={self.rclone_config_file}" if self.isRCLONE else ''
-
-        log_filename=f"{self.temp_dir}/{folder_name}.log"
-        if os.path.exists(log_filename):
-            os.remove(log_filename)
-
-        quoted_local_path=f"{dq}{local_path}/{dq}"
-        quoted_dest_path=f"{dq}{dest_path}/{dq}"
-        baseCMD=[self.pgm_bin,
-                    configuration_file,
-                    f"--exclude-from {exclude_filename}",
-                    f"--log-file {log_filename}", # se lo metto perdo l'output su console
-                    delete_excluded,
-                    options,
-                    gv.dry_run,
-                    quoted_local_path,
-                    quoted_dest_path,
-                ]
-        synchCMD=' '.join(baseCMD)
-
-
-
-        ### ----------------------------------
-        # -  comando colorato per la console
-        ### ----------------------------------
-        colored_data=[
-                    C.redH    + gv.dry_run + C.colorReset,
-                    C.greenH  + quoted_local_path + C.colorReset,
-                    C.yellowH + quoted_dest_path  + C.colorReset,
-                ]
-
-        colored_command=baseCMD[:-3]
-        colored_command.extend(colored_data)
-        colored_command=' '.join(colored_command)
-        self.logger.info(colored_command)
-
-
-        ### ----------------------------------
-        # -  convert command to string
-        ### ----------------------------------
-        if gv.prompt:
-            keyb_msg='[R]un [any]Skip'
-            choice=LnUtils.keyb_prompt(msg=keyb_msg, validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
-            if not choice=='r': return
-
-        ### ----------------------------------
-        # -  execute command
-        ### ----------------------------------
-        rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=profile["log_to_console"], stdout_file=stdout_file, stderr_file=stderr_file)
-
-        ### print log file
-        with open(log_filename, 'r', encoding='utf-8') as f:
-            for line in f:
-                print(line[28:].strip('\n'))
-        if self.isRSYNC:
-            print('''
-                for file status legenda see: https://stackoverflow.com/questions/4493525/what-does-f-mean-in-rsync-logs
-            ''')
-
-
-
-        self.logger.info("%s --> %s: [rcode:%s]", quoted_local_path, quoted_dest_path, rcode)
-
-        # if ' ' in local_path:
-        #     import pdb; pdb.set_trace(); pass # by Loreto
-
-
-
-
-    #==============================================================
-    #- check local directory
-    #- get and check remote dir
-    #- create eclude_file
-    #- build rclone command
-    #==============================================================
     def processProfile(self, gVars):
         global gv
         gv=gVars
 
         ### ---- read profile to be processed
         profile=self.load_req_profile(profile_name=gv.profile_name)
-        profile["options"]=self.main_options
-
 
         if isinstance(profile['remote_nodes'], str): profile['remote_nodes']=profile['remote_nodes'].split()
 
@@ -315,56 +209,106 @@ class lnSync_Class():
         else:
             profile['folders']=[]
 
-        rsync_options=self.setOptions
+        stdout_file=f'{self.temp_dir}/lnSync_stdout.log'
+        stderr_file=f'{self.temp_dir}/lnSync_stderr.log'
+        delete_excluded='--delete-excluded' if gv.delete_excluded else ''
+
         for node_name in profile['remote_nodes']:
             self.logger.notify("going to update node: %s", node_name)
             self.logger.notify("...the following folders:")
             for folder in profile['folders']:
                 self.logger.notify("    - %s", folder)
 
-
-            local_root_path=profile["local_root_dir"]
-            # remote_root_path=profile["remote_root_dir"]
-
-            # prf=SimpleNamespace()
-            # prf.profile=profile
-            # prf.node_name=node_name
-            # prf.log_to_console=profile['log_to_console']
-
-            ### ---- check remote path directory
-            # remote_path=self.resolveRemoteDir(profile=profile, node_name=node_name, path=remote_root_path, check_it=True, exit_on_error=True)
-            remote_path=self.resolveRemoteDir(profile=profile, node_name=node_name, check_it=True, exit_on_error=True)
+            check_remote_dir=True # check just first remote folder
 
             for folder_name in profile['folders']:
 
+                ### ---- check local directory
+                root_local_path=profile["root_local_dir"]
+                root_remote_path=profile["root_remote_dir"]
+
+                ### add project exclude file to exclude base list
+                exclude_filename=self.setExcludeFiles(profile.get("exclude_files", []))
+
+                ### add project options to common options list
+                options=self.setOptions(options=profile.get("options", []))
+
+                ### ---- check local path directory
                 if folder_name.endswith('.sub'):
                     folder_name=folder_name.split('.sub')[0]
                     fSubFolder=True
                 else:
                     fSubFolder=False
 
-                ### ---- check local path directory
-                local_path=self.checkLocalDir(path=f'{local_root_path}/{folder_name}', exit_on_error=True)
+                local_path=self.checkLocalDir(path=f'{root_local_path}/{folder_name}/', exit_on_error=True)
+                # import pdb; pdb.set_trace(); pass # by Loreto
+                # mp3_file_list=glob.glob(f'{root_local_path}/{folder_name}/**/*', recursive=True)
 
-                if fSubFolder:
-                    sub_folders=os.listdir(f'{local_root_path}/{folder_name}')
+                ### ---- check remote path directory
+                remote_path=self.resolveRemoteDir(node_name=node_name, path=root_remote_path, check_it=check_remote_dir, exit_on_error=True)
+                dest=f"{remote_path}/{folder_name}/"
 
-                    for sub_folder in sub_folders:
-                        _local_path=f'{local_path}/{sub_folder}'
-                        if not os.path.isdir(_local_path):
-                            self.logger.notify('file: %s will be skipped', _local_path)
-                            # LnUtils.keyb_prompt(msg=f'file: {_local_path} will be skipped', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
-                            continue
-                        _dest_path=f"{remote_path}/{folder_name}/{sub_folder}"
-                        self.processFolder(folder_name=folder_name, local_path=_local_path, dest_path=_dest_path, profile=profile)
-
+                if gv.mirror:
+                    options=self.setOptions(['--delete-after'])
                 else:
-                    dest_path=f"{remote_path}/{folder_name}"
-                    self.processFolder(folder_name=folder_name, local_path=local_path, dest_path=dest_path, profile=profile)
+                    options=self.setOptions()
+
+                ### -----------------------------
+                ### ---- prepare command
+                ### -----------------------------
+                configuration_file=f"--config={self.rclone_config_file}" if self.isRCLONE else ''
+
+                log_filename=f"{self.temp_dir}/{folder_name}.log"
+                baseCMD=[self.pgm_bin,
+                            configuration_file,
+                            f"--exclude-from {exclude_filename}",
+                            f"--log-file {log_filename}", # se lo metto perdo l'output su console
+                            delete_excluded,
+                            options,
+                            gv.dry_run,
+                            local_path ,
+                            dest,
+                        ]
+                synchCMD=' '.join(baseCMD)
 
 
+                ### ----------------------------------
+                # -  comando colorato per la console
+                ### ----------------------------------
+                colored_data=[
+                            C.redH    + gv.dry_run + C.colorReset,
+                            C.greenH  + local_path + C.colorReset,
+                            C.yellowH + dest       + C.colorReset,
+                        ]
+
+                colored_command=baseCMD[:-3]
+                colored_command.extend(colored_data)
+                colored_command=' '.join(colored_command)
+                self.logger.notify(colored_command)
+
+                ### ----------------------------------
+                # -  convert command to string
+                ### ----------------------------------
+
+                if gv.prompt:
+                    choice=LnUtils.keyb_prompt(msg='[R]un [any]Skip', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
+                    if not choice=='r': continue
+
+                ### ----------------------------------
+                # -  execute command
+                ### ----------------------------------
+                if os.path.exists(log_filename):
+                    os.remove(log_filename)
+                rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=False, stdout_file=stdout_file, stderr_file=stderr_file)
+
+                ### print log file
+                with open(log_filename, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        print(line[28:])
 
 
+                self.logger.info("%s --> %s: [rcode:%s]", local_path, dest, rcode)
+                check_remote_dir=False
 
 
             post_commands=profile.get('post_commands', [])
