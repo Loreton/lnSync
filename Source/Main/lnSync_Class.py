@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 30-12-2022 21.09.09
+# Date .........: 31-12-2022 17.27.50
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -27,10 +27,9 @@ from read_ini_file import readIniFile
 ########################################################
 class lnSync_Class():
 
-    def __init__(self, *, main_config: dict, logger, fRCLONE: bool=False, fRSYNC: bool=False):
+    def __init__(self, *, main_config: dict, profile_name: str, logger, fRCLONE: bool=False, fRSYNC: bool=False):
         self.logger=logger
 
-        # main_config             = self.load_profiles(filename=main_config_filename)
 
         main_data               = main_config['main']
         self.rclone_config_file = main_data['rclone_config_file']
@@ -41,34 +40,60 @@ class lnSync_Class():
 
         self.profiles           = main_config['profiles']
 
+        ### ---- read profile to be processed
+        self.profile=self.load_req_profile(profile_name=profile_name)
 
         self.isRCLONE=fRCLONE
         self.isRSYNC=fRSYNC
 
         if self.isRCLONE:
-            _config=main_config['rclone']
-            self.main_options=main_config['rclone.options']
-            self.rclone_bin=_config['bin']
-            self.pgm_bin=self.rclone_bin
+            # _config=main_config['rclone']
+            # self.main_options=main_config['rclone.options']
+            # self.rclone_bin=_config['bin']
+            # self.pgm_bin=self.rclone_bin
+            self.profile.update(main_config['rclone'])
 
         elif self.isRSYNC:
-            _config=main_config['rsync']
-            self.main_options=main_config['rsync.options']
-            self.rsync_bin=_config['bin']
-            self.pgm_bin=self.rsync_bin
+            # _config=main_config['rsync']
+            # self.main_options=main_config['rsync.options']
+            # self.rsync_bin=_config['bin']
+            # self.pgm_bin=self.rsync_bin
+
+            self.profile.update(main_config['rsync'])
 
         else:
             self.logger.critical('rclone or rsync must be specified.')
             sys.exit(1)
 
-        self.temp_dir = _config['temp_dir']
+
+        ### add remote nodes data
+        if isinstance(self.profile['remote_nodes'], str): self.profile['remote_nodes']=self.profile['remote_nodes'].split()
+        self.profile['nodes']={}
+        for node_name in self.profile['remote_nodes']:
+            node=self.rclone_conf.get(node_name, {})
+            self.profile['nodes'][node_name]=node
+
+        # self.pgm_options=[]
+        self.exclude_files=[]
+
+        if 'folders' in self.profile.keys():
+            if isinstance(self.profile['folders'], str):
+                self.profile['folders']=self.profile['folders'].split()
+        else:
+            self.profile['folders']=[]
+
+
+
+        # self.setOptions(options=_config['options'])
+        # self.setExcludeFiles(excl=main_config['common_exclude_files'])
+        self.profile.to_json(filepath=f"{self.runtime_dir}/json/{profile_name}.json")
+        self.profile.to_yaml(filepath=f"{self.runtime_dir}/yaml/{profile_name}.yaml")
+
+        self.temp_dir = self.profile['temp_dir']
         if not os.path.exists(self.temp_dir):
                 os.mkdir(self.temp_dir)
 
-        self.pgm_options=[]
-        self.exclude_files=[]
-        # self.setOptions(options=_config['options'])
-        self.setExcludeFiles(excl=main_config['common_exclude_files'])
+
 
 
 
@@ -103,7 +128,7 @@ class lnSync_Class():
         else:
             self.logger.error('Profile %s not found', profile_name)
             self.logger.notify('     Please enter one of the following profile name:')
-            colored_profile_name=C.redH + profile_name + C.redH + C.colorReset
+            colored_profile_name=C.redH + profile_name + C.greenH + C.colorReset
             for profile in self.profiles.keys():
                 if profile.startswith('_') or profile in ['main', 'local_vars']: continue
                 self.logger.info('     %s', profile.replace(profile_name, colored_profile_name))
@@ -143,12 +168,13 @@ class lnSync_Class():
             return None
 
     # def resolveRemoteDir(self, node_name: str, path: str, check_it: bool=False, exit_on_error=False):
-    def resolveRemoteDir(self, profile: dict, node_name: str, check_it: bool=False, exit_on_error=False):
-        # path=profile['remote_path']
-        path=profile["remote_root_dir"]
+    def resolveRemoteDir(self, node_name: str, check_it: bool=False, exit_on_error=False):
+        path=self.profile["remote_root_dir"]
         if path is None: path=''
-        node=self.rclone_conf.get(node_name, {})
+
+        node=self.profile.get(f'nodes.{node_name}', {})
         node_type=node.get('type')
+        check_cmd=None
 
         if node_name=='local': #---- rclone --config ./rclone.conf -L lsd /home/loreto
             remote_path=path
@@ -167,9 +193,8 @@ class lnSync_Class():
 
             elif self.isRSYNC:
                 remote_path=f"{ssh_user}@{ssh_host}:{path}"
-                check_cmd=f"ssh {self.ssh_base} ls -l {path}"
-                profile["options"].append("--compress")
-                profile["options"].append(f"-e 'ssh -i {ssh_key} -p {ssh_port}'")
+                check_cmd=f"ssh {self.ssh_base} ls -l {path}/"
+                self.profile["sync_options"].append(f"-e 'ssh -i {ssh_key} -p {ssh_port}'")
 
         elif node_type in ['gmail', 'drive']: #---- rclone --config=./rclone.conf -L lsd nloreto:_@NLORETO
 
@@ -178,6 +203,7 @@ class lnSync_Class():
                 check_cmd=f"{self.rclone_bin} --config={self.rclone_config_file} -L lsd {remote_path}"
             else:
                 remote_path=None
+                self.logger.error('node: %s: [%s] is not supported by rSync!', node_name, node_type )
 
         else:
             self.logger.error('node: %s: [%s] is not supported by rSync!', node_name, node_type )
@@ -187,7 +213,7 @@ class lnSync_Class():
         # check if remote_path exists
         if check_cmd and check_it:
             self.logger.info("[CMD] - %s", check_cmd)
-            run_sh(cmd=check_cmd, logger=self.logger, exit_on_error=exit_on_error)
+            run_sh(cmd=check_cmd, logger=self.logger, exit_on_error=exit_on_error, stacklevel=2)
 
         return remote_path
 
@@ -200,19 +226,11 @@ class lnSync_Class():
     #- create eclude_file
     #- build rclone command
     #==============================================================
-    def processFolder(self, folder_name, local_path, dest_path, profile):
+    def processFolder(self, folder_name, local_path, dest_path):
         # v=prfVars
 
         ### add project exclude file to exclude base list
-        exclude_filename=self.setExcludeFiles(profile.get("exclude_files", []))
-
-        ### add project options to common options list
-        # options=self.setOptions(options=profile.get("options", []))
-        if gv.mirror:
-            options.extend(['--delete-after'])
-
-        if 'big_files_or_remote_xfer' in profile and profile['big_files_or_remote_xfer']:
-            options.extend(self.config['rsync.big_files_or_remote_options'])
+        exclude_filename=self.setExcludeFiles(self.profile.get("exclude_files", []))
 
 
 
@@ -229,9 +247,11 @@ class lnSync_Class():
         if os.path.exists(log_filename):
             os.remove(log_filename)
 
+
         quoted_local_path=f"{dq}{local_path}/{dq}"
         quoted_dest_path=f"{dq}{dest_path}/{dq}"
-        baseCMD=[self.pgm_bin,
+        options=' '.join(self.profile['sync_options'])
+        baseCMD=[self.profile['bin'],
                     configuration_file,
                     f"--exclude-from {exclude_filename}",
                     f"--log-file {log_filename}", # se lo metto perdo l'output su console
@@ -271,7 +291,7 @@ class lnSync_Class():
         ### ----------------------------------
         # -  execute command
         ### ----------------------------------
-        rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=profile["log_to_console"], stdout_file=stdout_file, stderr_file=stderr_file)
+        rcode, stdout, stderr=runCommand(synchCMD, logger=self.logger, console=self.profile["log_to_console"], stdout_file=stdout_file, stderr_file=stderr_file)
 
         ### print log file
         with open(log_filename, 'r', encoding='utf-8') as f:
@@ -302,41 +322,33 @@ class lnSync_Class():
         global gv
         gv=gVars
 
-        ### ---- read profile to be processed
-        profile=self.load_req_profile(profile_name=gv.profile_name)
-        profile["options"]=self.main_options
+        ### add project options to common options list
+        if gv.mirror:
+            options.extend(['--delete-after'])
+
+        # if self.isRSYNC and self.profile.get('big_files'):
+        #     self.profile['sync_options'].extend(self.profile['big_files_or_remote_options'])
+
+        if self.isRSYNC and self.profile.get('rsync_extra_options'):
+            self.profile['sync_options'].extend(self.profile['rsync_extra_options'])
 
 
-        if isinstance(profile['remote_nodes'], str): profile['remote_nodes']=profile['remote_nodes'].split()
-
-        if 'folders' in profile.keys():
-            if isinstance(profile['folders'], str):
-                profile['folders']=profile['folders'].split()
-        else:
-            profile['folders']=[]
-
-        rsync_options=self.setOptions
-        for node_name in profile['remote_nodes']:
+        for node_name in self.profile['nodes'].keys():
             self.logger.notify("going to update node: %s", node_name)
             self.logger.notify("...the following folders:")
-            for folder in profile['folders']:
+            for folder in self.profile['folders']:
                 self.logger.notify("    - %s", folder)
 
-
-            local_root_path=profile["local_root_dir"]
-            # remote_root_path=profile["remote_root_dir"]
-
-            # prf=SimpleNamespace()
-            # prf.profile=profile
-            # prf.node_name=node_name
-            # prf.log_to_console=profile['log_to_console']
+            local_root_path=self.profile["local_root_dir"]
 
             ### ---- check remote path directory
-            # remote_path=self.resolveRemoteDir(profile=profile, node_name=node_name, path=remote_root_path, check_it=True, exit_on_error=True)
-            remote_path=self.resolveRemoteDir(profile=profile, node_name=node_name, check_it=True, exit_on_error=True)
+            remote_path=self.resolveRemoteDir(node_name=node_name, check_it=True, exit_on_error=True)
+            if not remote_path:
+                return
 
-            for folder_name in profile['folders']:
 
+
+            for folder_name in self.profile['folders']:
                 if folder_name.endswith('.sub'):
                     folder_name=folder_name.split('.sub')[0]
                     fSubFolder=True
@@ -356,18 +368,18 @@ class lnSync_Class():
                             # LnUtils.keyb_prompt(msg=f'file: {_local_path} will be skipped', validKeys='ENTER', exitKeys='x|q', displayValidKeys=False)
                             continue
                         _dest_path=f"{remote_path}/{folder_name}/{sub_folder}"
-                        self.processFolder(folder_name=folder_name, local_path=_local_path, dest_path=_dest_path, profile=profile)
+                        self.processFolder(folder_name=folder_name, local_path=_local_path, dest_path=_dest_path)
 
                 else:
                     dest_path=f"{remote_path}/{folder_name}"
-                    self.processFolder(folder_name=folder_name, local_path=local_path, dest_path=dest_path, profile=profile)
+                    self.processFolder(folder_name=folder_name, local_path=local_path, dest_path=dest_path)
 
 
 
 
 
 
-            post_commands=profile.get('post_commands', [])
+            post_commands=self.profile.get('post_commands', [])
             if post_commands and not gv.fPostcommands:
                 self.logger.warning("   enter --post-commands to execute the following commands")
 

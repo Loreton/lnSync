@@ -15,11 +15,12 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             "args":[
-                "--profile=ln_to_lndisk",
+                "--profile=myData_to_lnpi31",
                 "--rsync",
                 "--console-logger-level=info",
                 "--file-logger-level=warning",
                 "--logging-dir=/tmp/lnsync",
+                "--config-file=/home/loreto/.ln/config/lnSync/main_config.yaml",
             ]
         }
     ]

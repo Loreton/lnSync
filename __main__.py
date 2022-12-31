@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 29-12-2022 08.33.31
+# Date .........: 31-12-2022 17.02.43
 
 #===============================================
 # progamma che cerca di sfruttare al meglio le caratteristiche di rclone ed rsync
@@ -16,7 +16,6 @@ import os
 from pathlib import Path
 from types import SimpleNamespace
 
-
 import Source
 from ColoredLogger import setColoredLogger, testLogger
 from lnSync_Class import lnSync_Class
@@ -24,7 +23,7 @@ from LoadYamlFile_Class import LoadYamlFile_Class
 from ParseInput import ParseInput
 
 
-__ln_version__="lnSync V2022-12-29_083331"
+__ln_version__="lnSync V2022-12-31_170243"
 
 
 #######################################################
@@ -66,10 +65,9 @@ if __name__ == '__main__':
     # myYaml=LoadYamlFile_Class(filename='main_config.yaml', search_paths=['conf'], resolve_include=True, resolve_vars=True)
     myYaml=LoadYamlFile_Class(filename=args.config_file, search_paths=[], resolve_include=True, resolve_vars=True)
     my_config=myYaml.get_dict() # converte anche il dict in benedict
-
     my_config.to_yaml(filepath='/tmp/prova.yaml', indent=4, sort_keys=False)
 
-    lnSync=lnSync_Class(main_config=my_config, fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
+    lnSync=lnSync_Class(main_config=my_config, profile_name=args.profile, fRCLONE=args.rclone, fRSYNC=args.rsync, logger=logger)
 
     lnSync.processProfile(gVars=gVars)
     if not args.go:
