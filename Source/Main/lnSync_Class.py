@@ -3,7 +3,7 @@
 # -*- coding: iso-8859-1 -*-
 
 # updated by ...: Loreto Notarantonio
-# Date .........: 31-12-2022 17.27.50
+# Date .........: 11-01-2023 09.38.09
 
 import sys; sys.dont_write_bytecode=True
 import os
@@ -189,7 +189,7 @@ class lnSync_Class():
 
             if self.isRCLONE:
                 remote_path=f"{node_name}:{path}"
-                check_cmd=f"{self.rclone_bin} --config={self.rclone_config_file} -L lsd {remote_path}"
+                check_cmd=f"{self.profile['bin']} --config={self.rclone_config_file} -L lsd {remote_path}"
 
             elif self.isRSYNC:
                 remote_path=f"{ssh_user}@{ssh_host}:{path}"
@@ -200,7 +200,7 @@ class lnSync_Class():
 
             if self.isRCLONE:
                 remote_path=f"{node_name}:_@{node_name.upper()}{path}"
-                check_cmd=f"{self.rclone_bin} --config={self.rclone_config_file} -L lsd {remote_path}"
+                check_cmd=f"{self.profile['bin']} --config={self.rclone_config_file} -L lsd {remote_path}"
             else:
                 remote_path=None
                 self.logger.error('node: %s: [%s] is not supported by rSync!', node_name, node_type )

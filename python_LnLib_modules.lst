@@ -6,7 +6,7 @@
 "$LNLIB_DIR/System/subprocessRun.py"     =
 
 ### Utils
-"$LNLIB_DIR/Utils/LnUtilsAndMonkeys.py"        LnUtils.py
+"$LNLIB_DIR/Utils/LnUtils.py"              =
 # "$LNLIB_DIR/Utils/fileUtils.py"          =
 # "$LNLIB_DIR/Utils/keyboard_prompt.py"    =
 
